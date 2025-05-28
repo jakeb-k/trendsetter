@@ -47,6 +47,7 @@ export default function LoginScreen() {
                 <TextInput
                     placeholder="Email"
                     placeholderTextColor="#ccc"
+                    onChange={(e) => handleOnChange('email', e.nativeEvent.text)}
                     className="bg-white/90 text-black px-4 py-3 rounded-xl mb-4"
                     keyboardType="email-address"
                     autoCapitalize="none"
@@ -55,6 +56,7 @@ export default function LoginScreen() {
                 <TextInput
                     placeholder="Password"
                     placeholderTextColor="#ccc"
+                    onChange={(e) => handleOnChange('password', e.nativeEvent.text)}
                     className="bg-white/90 text-black px-4 py-3 rounded-xl mb-4"
                     secureTextEntry
                 />
