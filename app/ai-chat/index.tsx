@@ -5,7 +5,13 @@ import { ThemedView } from '@/components/ThemedView';
 import Message from '@/types/models/Message';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useState } from 'react';
-import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from 'react-native';
 
 export default function ChatScreen() {
     const [messages, setMessages] = useState<Message[]>([
@@ -20,7 +26,6 @@ So…
 What's the goal you're chasing right now?`,
             sender: 'bot',
         },
-        // { content: 'I want to improve my coding skills.', sender: 'user' },
     ]);
     const [loading, setLoading] = useState(false);
     const [newMessage, setNewMessage] = useState<string>('');
@@ -28,9 +33,9 @@ What's the goal you're chasing right now?`,
     const [error, setError] = useState<string | null>(null);
 
     const handleSendMessage = async () => {
-        let firstGoalMessage = null; 
+        let firstGoalMessage = null;
         if (!goalDescription) {
-            firstGoalMessage = newMessage; 
+            firstGoalMessage = newMessage;
             setGoalDescription(newMessage);
         }
         setLoading(true);
@@ -40,7 +45,9 @@ What's the goal you're chasing right now?`,
         ]);
         setNewMessage('');
         const payload = {
-            goal_description: firstGoalMessage ? firstGoalMessage : goalDescription!,
+            goal_description: firstGoalMessage
+                ? firstGoalMessage
+                : goalDescription!,
             context: [...messages, { content: newMessage, sender: 'user' }],
         };
 
@@ -48,15 +55,24 @@ What's the goal you're chasing right now?`,
             const response = await sendAiChatRequest(payload);
 
             if (!response.error) {
-                if(!response.finished){
+                if (!response.finished) {
                     setMessages((prevMessages) => [
                         ...prevMessages,
                         { content: response.message, sender: 'bot' },
                     ]);
+                } else {
+                    const finishedMessage = `Got it. That's a solid goal — now I'm forging your plan.
+
+Give me a sec to break it down into steps you can actually stick to.`;
+                    setMessages((prevMessages) => [
+                        ...prevMessages,
+                        { content: finishedMessage, sender: 'bot' },
+                    ]);
+                    //grab the events and add them to the session storage - need zustand persistence here. 
                 }
                 console.log(response);
                 setLoading(false);
-                // router.replace('/'); // go to index page, replacing login
+                //  // go to index page, replacing login
             } else {
                 setError(
                     'There was an error logging in. Please try again later.'
@@ -70,9 +86,11 @@ What's the goal you're chasing right now?`,
 
     return (
         <ThemedView className=" pt-6 px-4 h-full relative">
-            
-            <TouchableOpacity className='bg-white/10 w-fit rounded-xl p-2 mb-4' onPress={handleSendMessage}>
-                <Text className='text-primary'>SEND</Text>
+            <TouchableOpacity
+                className="bg-white/10 w-fit rounded-xl p-2 mb-4"
+                onPress={handleSendMessage}
+            >
+                <Text className="text-primary">SEND</Text>
             </TouchableOpacity>
             <ScrollView className="space-y-4 pb-32">
                 {messages.map((message, index) => (
@@ -85,7 +103,7 @@ What's the goal you're chasing right now?`,
                 <TextInput
                     multiline={true}
                     value={newMessage}
-                    textAlignVertical='top'
+                    textAlignVertical="top"
                     editable={!loading}
                     placeholder="Type your message..."
                     placeholderTextColor="#ccc"
