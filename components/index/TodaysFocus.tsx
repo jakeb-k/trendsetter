@@ -4,7 +4,7 @@ import { Text, View } from 'react-native';
 export default function TodaysFocus() {
     return (
         <View
-            className="bg-primary rounded-lg my-4 mt-12 py-4 px-4 "
+            className="bg-primary rounded-lg mb-2 mt-6 py-4 px-4 "
         >
             <Text className="text-white font-satoshi text-xl">Today's Focus</Text>
             <View className="bg-[#FF8F19] rounded-lg flex flex-row items-center justify-between p-2 w-full mt-2 mx-auto">
