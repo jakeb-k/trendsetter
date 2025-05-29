@@ -1,4 +1,4 @@
-import type { PropsWithChildren, ReactElement } from 'react';
+import type { PropsWithChildren, ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, {
   interpolate,
@@ -11,16 +11,16 @@ import { ThemedView } from '@/components/ThemedView';
 import { useBottomTabOverflow } from '@/components/ui/TabBarBackground';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
-const HEADER_HEIGHT = 250;
+const HEADER_HEIGHT = 80;
 
 type Props = PropsWithChildren<{
-  headerImage: ReactElement;
+  headerContent?: ReactNode;
   headerBackgroundColor: { dark: string; light: string };
 }>;
 
 export default function ParallaxScrollView({
   children,
-  headerImage,
+  headerContent,
   headerBackgroundColor,
 }: Props) {
   const colorScheme = useColorScheme() ?? 'light';
@@ -54,12 +54,12 @@ export default function ParallaxScrollView({
         <Animated.View
           style={[
             styles.header,
-            { backgroundColor: headerBackgroundColor[colorScheme] },
+            { backgroundColor: '#FF6B00' },
             headerAnimatedStyle,
           ]}>
-          {headerImage}
+          {headerContent}
         </Animated.View>
-        <ThemedView style={styles.content}>{children}</ThemedView>
+        <ThemedView className='rounded-t-xl' style={styles.content}>{children}</ThemedView>
       </Animated.ScrollView>
     </ThemedView>
   );
@@ -68,6 +68,7 @@ export default function ParallaxScrollView({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FF6B00'
   },
   header: {
     height: HEADER_HEIGHT,
@@ -75,8 +76,8 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 32,
     gap: 16,
     overflow: 'hidden',
+    backgroundColor: '#FF6B00'
   },
 });
