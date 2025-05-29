@@ -1,9 +1,12 @@
 import { sendAiChatRequest } from '@/api/aiChatApi';
 import MessageBubble from '@/components/ai-chat/MessageBubble';
-import DotSpinner from '@/components/common/DotSpinner';
+import PrimaryButton from '@/components/common/PrimaryButton';
+import TypingLoader from '@/components/common/TypingLoader';
 import { ThemedView } from '@/components/ThemedView';
 import Message from '@/types/models/Message';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import {
     ScrollView,
@@ -31,6 +34,7 @@ What's the goal you're chasing right now?`,
     const [newMessage, setNewMessage] = useState<string>('');
     const [goalDescription, setGoalDescription] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [finished, setFinished] = useState(false);
 
     const handleSendMessage = async () => {
         let firstGoalMessage = null;
@@ -61,14 +65,34 @@ What's the goal you're chasing right now?`,
                         { content: response.message, sender: 'bot' },
                     ]);
                 } else {
-                    const finishedMessage = `Got it. That's a solid goal — now I'm forging your plan.
+                    const finishedMessage = `Alright — your plan's forged 🔥
 
-Give me a sec to break it down into steps you can actually stick to.`;
+Every step is built to push you forward. Check your calendar, lock in your focus, and let's get to work.`;
+
                     setMessages((prevMessages) => [
                         ...prevMessages,
                         { content: finishedMessage, sender: 'bot' },
                     ]);
-                    //grab the events and add them to the session storage - need zustand persistence here. 
+
+                    // Persisting to AsyncStorage
+                    try {
+                        await AsyncStorage.setItem(
+                            'events',
+                            JSON.stringify(response.events)
+                        );
+                        await AsyncStorage.setItem(
+                            'ai_plan',
+                            JSON.stringify(response.ai_plan)
+                        );
+                        await AsyncStorage.setItem(
+                            'goal',
+                            JSON.stringify(response.goal)
+                        );
+                        setFinished(true)
+                    } catch (error) {
+                        console.error('AsyncStorage write failed:', error);
+                    }
+                    //grab the events and add them to the session storage - need zustand persistence here.
                 }
                 console.log(response);
                 setLoading(false);
@@ -97,9 +121,14 @@ Give me a sec to break it down into steps you can actually stick to.`;
                     <MessageBubble key={index} message={message} />
                 ))}
 
-                {loading && <DotSpinner />}
+                {loading && <TypingLoader />}
+                {finished && (
+                    <PrimaryButton onPress={() => router.navigate('/')}>
+                        <Text className='font-satoshi text-center text-white font-bold text-lg '>Let's Go!</Text>
+                    </PrimaryButton>
+                )}
             </ScrollView>
-            <View className="absolute bottom-4 w-full backdrop-blur-xl">
+            <View className="absolute bottom-0 pt-6 rounded-t-lg w-full backdrop-blur-xl">
                 <TextInput
                     multiline={true}
                     value={newMessage}
@@ -116,7 +145,7 @@ Give me a sec to break it down into steps you can actually stick to.`;
                     name="microphone"
                     size={24}
                     color="#FF6B00"
-                    className="absolute right-12 top-4"
+                    className="absolute right-12 top-12"
                 />
             </View>
         </ThemedView>
