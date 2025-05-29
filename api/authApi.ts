@@ -1,5 +1,5 @@
 import Config from "@/constants/Config";
-import RegisterRequest, { LoginRequest } from "@/types/requests/Auth";
+import RegisterRequest, { LoginRequest } from "@/types/requests/AuthRequest";
 import axios from "axios";
 
 export async function sendLoginRequest(payload: LoginRequest) {

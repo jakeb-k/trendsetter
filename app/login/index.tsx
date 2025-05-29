@@ -1,4 +1,4 @@
-import { sendLoginRequest } from '@/api/aiChatApi';
+import { sendLoginRequest } from '@/api/authApi';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ImageBackground } from 'expo-image';

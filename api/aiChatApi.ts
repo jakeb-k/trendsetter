@@ -1,13 +1,14 @@
-import Config from "@/constants/Config";
-import { LoginRequest } from "@/types/requests/Auth";
-import axios from "axios";
+import Config from '@/constants/Config';
+import { AiChatRequest } from '@/types/requests/AiChatRequest';
 
-export async function sendLoginRequest(payload: LoginRequest) {
-  try {
-    const res = await axios.post(`${Config.API_URL}/auth/login`, payload);
-    return res.data;
-  } catch (err) {
-    console.error('Login request failed:', err);
-    return {error: true, message:err}
-  }
+import axios from 'axios';
+
+export async function sendAiChatRequest(payload: AiChatRequest) {
+    try {
+        const res = await axios.post(`${Config.API_URL}/ai-plan/chat`, payload);
+        return res.data;
+    } catch (err) {
+        console.error('AI Chat request failed:', err);
+        return { error: true, message: err };
+    }
 }
