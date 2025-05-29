@@ -3,7 +3,7 @@ import { Text, View } from 'react-native';
 export default function CurrentGoal() {
     const progressPercentage = 30;
     return (
-        <View className="">
+        <View className="mb-4">
             <Text className="text-[#8B3C00] font-semibold text-lg">Current Goal</Text>
             <View className="bg-[#FDF7E8] drop-shadow-md rounded-lg p-2 mt-2">
                 <View className="flex flex-row justify-between">
