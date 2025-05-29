@@ -1,10 +1,11 @@
 import { sendAiChatRequest } from '@/api/aiChatApi';
 import MessageBubble from '@/components/ai-chat/MessageBubble';
+import DotSpinner from '@/components/common/DotSpinner';
 import { ThemedView } from '@/components/ThemedView';
 import Message from '@/types/models/Message';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useState } from 'react';
-import { ScrollView, TextInput, View } from 'react-native';
+import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function ChatScreen() {
     const [messages, setMessages] = useState<Message[]>([
@@ -21,59 +22,83 @@ What's the goal you're chasing right now?`,
         },
         // { content: 'I want to improve my coding skills.', sender: 'user' },
     ]);
-    const [loading, setLoading] = useState(false); 
+    const [loading, setLoading] = useState(false);
     const [newMessage, setNewMessage] = useState<string>('');
     const [goalDescription, setGoalDescription] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const handleSendMessage = async () => {
-        if(!goalDescription){
+        let firstGoalMessage = null; 
+        if (!goalDescription) {
+            firstGoalMessage = newMessage; 
             setGoalDescription(newMessage);
         }
         setLoading(true);
-        setMessages((prevMessages) => (
-            [...prevMessages, {content: newMessage, sender: "user"}]
-        ))
-        setNewMessage(''); 
+        setMessages((prevMessages) => [
+            ...prevMessages,
+            { content: newMessage, sender: 'user' },
+        ]);
+        setNewMessage('');
         const payload = {
-            goalDescription: goalDescription!,
-            context: messages, 
-        }
+            goal_description: firstGoalMessage ? firstGoalMessage : goalDescription!,
+            context: [...messages, { content: newMessage, sender: 'user' }],
+        };
+
         try {
             const response = await sendAiChatRequest(payload);
 
             if (!response.error) {
-                console.log(response); 
+                if(!response.finished){
+                    setMessages((prevMessages) => [
+                        ...prevMessages,
+                        { content: response.message, sender: 'bot' },
+                    ]);
+                }
+                console.log(response);
+                setLoading(false);
                 // router.replace('/'); // go to index page, replacing login
             } else {
-                setError('There was an error logging in. Please try again later.');
+                setError(
+                    'There was an error logging in. Please try again later.'
+                );
             }
         } catch (err) {
             console.error('Login error:', err);
             setError('Unexpected error. Please try again later.');
         }
-    }
+    };
 
     return (
         <ThemedView className=" pt-6 px-4 h-full relative">
+            
+            <TouchableOpacity className='bg-white/10 w-fit rounded-xl p-2 mb-4' onPress={handleSendMessage}>
+                <Text className='text-primary'>SEND</Text>
+            </TouchableOpacity>
             <ScrollView className="space-y-4 pb-32">
                 {messages.map((message, index) => (
                     <MessageBubble key={index} message={message} />
                 ))}
+
+                {loading && <DotSpinner />}
             </ScrollView>
-            <View className="absolute bottom-4 w-11/12">
+            <View className="absolute bottom-4 w-full backdrop-blur-xl">
                 <TextInput
+                    multiline={true}
+                    value={newMessage}
+                    textAlignVertical='top'
+                    editable={!loading}
                     placeholder="Type your message..."
                     placeholderTextColor="#ccc"
+                    style={{ maxHeight: 120 }}
                     onChangeText={setNewMessage}
                     onSubmitEditing={handleSendMessage}
-                    className="bg-white/10 text-white px-4 py-3 rounded-xl mb-4 w-full"
+                    className="bg-white/10 text-white px-4 py-3 backdrop-blur-xl rounded-xl mb-4 w-11/12 pr-10"
                 />
                 <FontAwesome
                     name="microphone"
                     size={24}
                     color="#FF6B00"
-                    className="absolute right-4 top-3"
+                    className="absolute right-12 top-4"
                 />
             </View>
         </ThemedView>

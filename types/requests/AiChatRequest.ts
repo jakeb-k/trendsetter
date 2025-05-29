@@ -1,6 +1,6 @@
 import Message from "../models/Message";
 
 export interface AiChatRequest {
-    goalDescription: string; 
+    goal_description: string; 
     context?: Message[];
 }
