@@ -4,7 +4,19 @@ module.exports = {
   content: ["./App.tsx", "./components/**/*.{js,jsx,ts,tsx}", "./app/**/*.{js,ts,jsx,tsx}"],
   presets: [require("nativewind/preset")],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: '#FF6B00',
+        secondary: '#121212',
+        tertiary: "#1E1E24"
+      },
+      fontFamily: {
+        satoshi: ['Satoshi', 'sans-serif'],
+        satoshi_italic: ['Satoshi-Italic', 'sans-serif'],
+        sans: ['Inter', 'sans-serif'],
+        serif: ['Merriweather', 'serif'],
+      },
+    },
   },
   plugins: [],
 }

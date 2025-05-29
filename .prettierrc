@@ -3,7 +3,6 @@
     "singleQuote": true,
     "singleAttributePerLine": false,
     "htmlWhitespaceSensitivity": "css",
-    "printWidth": 150,
     "plugins": [],
     "tailwindFunctions": ["clsx", "cn"],
     "tabWidth": 4,
