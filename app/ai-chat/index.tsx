@@ -12,8 +12,7 @@ import {
     ScrollView,
     Text,
     TextInput,
-    TouchableOpacity,
-    View,
+    View
 } from 'react-native';
 
 export default function ChatScreen() {
@@ -110,12 +109,12 @@ Every step is built to push you forward. Check your calendar, lock in your focus
 
     return (
         <ThemedView className=" pt-6 px-4 h-full relative">
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 className="bg-white/10 w-fit rounded-xl p-2 mb-4"
                 onPress={handleSendMessage}
             >
                 <Text className="text-primary">SEND</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <ScrollView className="space-y-4 pb-32">
                 {messages.map((message, index) => (
                     <MessageBubble key={index} message={message} />

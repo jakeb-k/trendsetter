@@ -7,10 +7,10 @@ export default function CurrentGoal() {
             <Text className="text-[#8B3C00] font-semibold text-lg ml-1">Current Goal</Text>
             <View className="bg-[#FDF7E8] drop-shadow-md rounded-lg p-2 mt-2">
                 <View className="flex flex-row justify-between">
-                    <Text className="text-[#8B3C00] font-semibold text-lg">
+                    <Text className="text-[#8B3C00] font-semibold text-base">
                         Improve Golf Score
                     </Text>
-                    <Text className="text-[#8B3C00] font-semibold text-lg">30%</Text>
+                    <Text className="text-[#8B3C00] font-semibold text-base">30%</Text>
                 </View>
                 <View className="relative my-2">
                     <View className="bg-gray-200 rounded-xl w-full h-4"></View>
