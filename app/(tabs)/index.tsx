@@ -1,7 +1,9 @@
 import CurrentGoal from '@/components/index/CurrentGoal';
-import NextEvents from '@/components/index/NextEvents';
 import TodaysFocus from '@/components/index/TodaysFocus';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { useEventsStore } from '@/stores/useEventStore';
+import { setTodaysEvents } from '@/utils/scheduleHandler';
+import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 
 // id: number;
@@ -15,38 +17,46 @@ import { Text, View } from 'react-native';
 // completed_at: Date;
 // points: number;
 
-const events = {
-    '2025/05/30': [
-        {
-            id: 1,
-            title: 'Read putting guide',
-            description: 'something',
-            scheduled_for: new Date('2025/05/30'),
-            completed_at: null,
-            points: 25,
-        },
-        {
-            id: 2,
-            title: 'Practice chipping drills',
-            description: 'something',
-            scheduled_for: new Date('2025/05/30'),
-            completed_at: null,
-            points: 25,
-        },
-    ],
-    '2025/05/31': [
-        {
-            id: 1,
-            title: 'Play a round of golf',
-            description: 'something',
-            scheduled_for: new Date('2025/05/31'),
-            completed_at: null,
-            points: 25,
-        },
-    ],
-};
+// const events = {
+//     '2025/05/30': [
+//         {
+//             id: 1,
+//             title: 'Read putting guide',
+//             description: 'something',
+//             scheduled_for: new Date('2025/05/30'),
+//             completed_at: null,
+//             points: 25,
+//         },
+//         {
+//             id: 2,
+//             title: 'Practice chipping drills',
+//             description: 'something',
+//             scheduled_for: new Date('2025/05/30'),
+//             completed_at: null,
+//             points: 25,
+//         },
+//     ],
+//     '2025/05/31': [
+//         {
+//             id: 1,
+//             title: 'Play a round of golf',
+//             description: 'something',
+//             scheduled_for: new Date('2025/05/31'),
+//             completed_at: null,
+//             points: 25,
+//         },
+//     ],
+// };
 
 export default function HomeScreen() {
+    const {events} = useEventsStore(); 
+
+    const todaysEvents = useMemo(() => {
+    return setTodaysEvents(events || []);
+    }, [events]);
+
+    console.log(todaysEvents); 
+
     return (
         <ParallaxScrollView
             headerBackgroundColor={{ light: '#FFF9EC ', dark: '#FFF9EC ' }}
@@ -74,15 +84,15 @@ export default function HomeScreen() {
                 style={{ borderTopEndRadius: 32, borderTopStartRadius: 32 }}
                 className="bg-[#FEF3DA] min-h-screen rounded-t-xl px-4"
             >
-                <TodaysFocus />
+                <TodaysFocus todaysEvents={todaysEvents} />
                 <CurrentGoal />
-                {Object.entries(events).map(([date, eventsList]) => (
+                {/* {Object.entries(events).map(([date, eventsList]) => (
                     <NextEvents
                         key={date}
                         date={new Date(date)}
                         events={eventsList}
                     />
-                ))}
+                ))} */}
             </View>
         </ParallaxScrollView>
     );
