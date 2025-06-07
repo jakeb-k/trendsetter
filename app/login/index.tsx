@@ -1,6 +1,7 @@
 import { sendLoginRequest } from '@/api/authApi';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { useEventsStore } from '@/stores/useEventStore';
+import { useGoalsStore } from '@/stores/useGoalStore';
 import Goal from '@/types/models/Goal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ImageBackground } from 'expo-image';
@@ -20,6 +21,7 @@ export default function LoginScreen() {
         }));
     };
     const { setEvents } = useEventsStore(); 
+    const { setGoals } = useGoalsStore(); 
 
     const handleLogin = async () => {
         try {

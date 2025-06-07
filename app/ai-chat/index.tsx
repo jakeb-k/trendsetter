@@ -3,6 +3,7 @@ import MessageBubble from '@/components/ai-chat/MessageBubble';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import TypingLoader from '@/components/common/TypingLoader';
 import { ThemedView } from '@/components/ThemedView';
+import { useEventsStore } from '@/stores/useEventStore';
 import Message from '@/types/models/Message';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -12,6 +13,7 @@ import {
     ScrollView,
     Text,
     TextInput,
+    TouchableOpacity,
     View
 } from 'react-native';
 
@@ -34,7 +36,7 @@ What's the goal you're chasing right now?`,
     const [goalDescription, setGoalDescription] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [finished, setFinished] = useState(false);
-
+    const {setEvents} = useEventsStore(); 
     const handleSendMessage = async () => {
         let firstGoalMessage = null;
         if (!goalDescription) {
@@ -75,10 +77,7 @@ Every step is built to push you forward. Check your calendar, lock in your focus
 
                     // Persisting to AsyncStorage
                     try {
-                        await AsyncStorage.setItem(
-                            'events',
-                            JSON.stringify(response.events)
-                        );
+                        setEvents(response.events);
                         await AsyncStorage.setItem(
                             'ai_plan',
                             JSON.stringify(response.ai_plan)
@@ -109,12 +108,12 @@ Every step is built to push you forward. Check your calendar, lock in your focus
 
     return (
         <ThemedView className=" pt-6 px-4 h-full relative">
-            {/* <TouchableOpacity
+            <TouchableOpacity
                 className="bg-white/10 w-fit rounded-xl p-2 mb-4"
                 onPress={handleSendMessage}
             >
                 <Text className="text-primary">SEND</Text>
-            </TouchableOpacity> */}
+            </TouchableOpacity>
             <ScrollView className="space-y-4 pb-32">
                 {messages.map((message, index) => (
                     <MessageBubble key={index} message={message} />

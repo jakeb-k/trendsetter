@@ -1,17 +1,25 @@
+import Event from '@/types/models/Event';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { Text, View } from 'react-native';
 
-export default function TodaysFocus() {
+export default function TodaysFocus({
+    todaysEvents,
+}: {
+    todaysEvents: Event[];
+}) {
     return (
-        <View
-            className="bg-primary rounded-lg mb-2 mt-6 py-4 px-4 "
-        >
-            <Text className="text-white font-satoshi text-xl">Today's Focus</Text>
+        <View className="bg-primary rounded-lg mb-2 mt-6 py-4 px-4 ">
+            <Text className="text-white font-satoshi text-xl">
+                Today's Focus
+            </Text>
             <View className="bg-[#FF8F19] rounded-lg flex flex-row items-center justify-between p-2 w-full mt-2 mx-auto">
-                <View>
-                    <Text className='text-lg text-white font-satoshi'>Practice putting drills</Text>
-                    <Text className='text-sm text-white font-satoshi'>9:00 AM</Text>
-                </View>
+                {todaysEvents.map((event: Event) => (
+                    <View key={event.id}>
+                        <Text className="text-lg text-white font-satoshi">
+                            {event.title}
+                        </Text>
+                    </View>
+                ))}
                 <AntDesign name="checkcircle" size={24} color="white" />
             </View>
         </View>
