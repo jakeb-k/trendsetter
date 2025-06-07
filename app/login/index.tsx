@@ -1,11 +1,13 @@
 import { sendLoginRequest } from '@/api/authApi';
 import PrimaryButton from '@/components/common/PrimaryButton';
+import { useEventsStore } from '@/stores/useEventStore';
+import { useGoalsStore } from '@/stores/useGoalStore';
+import Goal from '@/types/models/Goal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ImageBackground } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
-
 export default function LoginScreen() {
     const [loginDetails, setLoginDetails] = useState({
         email: '',
@@ -18,12 +20,17 @@ export default function LoginScreen() {
             [key]: value,
         }));
     };
+    const { setEvents } = useEventsStore(); 
+    const { setGoals } = useGoalsStore(); 
 
     const handleLogin = async () => {
         try {
             const response = await sendLoginRequest(loginDetails);
 
             if (!response.error) {
+                const events = response.goals.flatMap((goal: Goal) => goal.events);
+                setEvents(events);
+                setGoals(response.goals)
                 await AsyncStorage.setItem('token', response.token);
                 await AsyncStorage.setItem('user', JSON.stringify(response.user));
                 router.replace('/'); // go to index page, replacing login

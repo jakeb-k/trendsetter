@@ -1,4 +1,4 @@
-import type { PropsWithChildren, ReactElement } from 'react';
+import type { PropsWithChildren, ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, {
   interpolate,
@@ -11,16 +11,16 @@ import { ThemedView } from '@/components/ThemedView';
 import { useBottomTabOverflow } from '@/components/ui/TabBarBackground';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
-const HEADER_HEIGHT = 250;
+const HEADER_HEIGHT = 110;
 
 type Props = PropsWithChildren<{
-  headerImage: ReactElement;
+  headerContent?: ReactNode;
   headerBackgroundColor: { dark: string; light: string };
 }>;
 
 export default function ParallaxScrollView({
   children,
-  headerImage,
+  headerContent,
   headerBackgroundColor,
 }: Props) {
   const colorScheme = useColorScheme() ?? 'light';
@@ -50,16 +50,16 @@ export default function ParallaxScrollView({
         ref={scrollRef}
         scrollEventThrottle={16}
         scrollIndicatorInsets={{ bottom }}
-        contentContainerStyle={{ paddingBottom: bottom }}>
+        contentContainerStyle={{ paddingBottom: bottom, flexGrow: 1 }}>
         <Animated.View
           style={[
             styles.header,
-            { backgroundColor: headerBackgroundColor[colorScheme] },
+            { backgroundColor: '#FF6B00' },
             headerAnimatedStyle,
           ]}>
-          {headerImage}
+          {headerContent}
         </Animated.View>
-        <ThemedView style={styles.content}>{children}</ThemedView>
+        <ThemedView className='rounded-t-xl' style={styles.content}>{children}</ThemedView>
       </Animated.ScrollView>
     </ThemedView>
   );
@@ -68,15 +68,16 @@ export default function ParallaxScrollView({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FF6B00'
   },
   header: {
     height: HEADER_HEIGHT,
     overflow: 'hidden',
   },
   content: {
-    flex: 1,
-    padding: 32,
+    minHeight: '100%',
     gap: 16,
     overflow: 'hidden',
+    backgroundColor: '#FF6B00'
   },
 });

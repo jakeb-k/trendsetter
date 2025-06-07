@@ -3,6 +3,7 @@ import MessageBubble from '@/components/ai-chat/MessageBubble';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import TypingLoader from '@/components/common/TypingLoader';
 import { ThemedView } from '@/components/ThemedView';
+import { useEventsStore } from '@/stores/useEventStore';
 import Message from '@/types/models/Message';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -13,7 +14,7 @@ import {
     Text,
     TextInput,
     TouchableOpacity,
-    View,
+    View
 } from 'react-native';
 
 export default function ChatScreen() {
@@ -35,7 +36,7 @@ What's the goal you're chasing right now?`,
     const [goalDescription, setGoalDescription] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [finished, setFinished] = useState(false);
-
+    const {setEvents} = useEventsStore(); 
     const handleSendMessage = async () => {
         let firstGoalMessage = null;
         if (!goalDescription) {
@@ -76,10 +77,7 @@ Every step is built to push you forward. Check your calendar, lock in your focus
 
                     // Persisting to AsyncStorage
                     try {
-                        await AsyncStorage.setItem(
-                            'events',
-                            JSON.stringify(response.events)
-                        );
+                        setEvents(response.events);
                         await AsyncStorage.setItem(
                             'ai_plan',
                             JSON.stringify(response.ai_plan)
