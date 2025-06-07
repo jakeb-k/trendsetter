@@ -3,7 +3,7 @@ export default interface Event {
     title: string;
     description: string;
     repeat?: {
-        frequency: number;
+        frequency: string;
         duration_of_weeks: number;
     };
     scheduled_for: Date;

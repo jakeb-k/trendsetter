@@ -10,9 +10,40 @@ export function setTodaysEvents(events: Event[] = []): Event[] {
     return events.filter((event) => isWeeklyTrigger(event.scheduled_for));
 }
 
-export function setUpcomingEvents(events: Event[] = []): Event[] {
-    const newEvents = events;
-    return events.filter((event) => isWeeklyTrigger(event.scheduled_for));
+function getNextOccurrence(startDate: Date, type: 'weekly' | 'monthly'): Date {
+    const now = new Date();
+    let next = new Date(startDate);
+
+    while (next < now) {
+        next = new Date(next);
+        if (type === 'weekly') {
+            next.setDate(next.getDate() + 7);
+        } else if (type === 'monthly') {
+            next.setMonth(next.getMonth() + 1);
+        }
+    }
+
+    return next;
+}
+
+export function setUpcomingEvents(events: Event[] = []): (Event & { upcomingDate: Date })[] {
+    return events
+        .filter((event) => !isWeeklyTrigger(event.scheduled_for)) // skip unwanted ones
+        .map((event) => {
+            const scheduled = new Date(event.scheduled_for);
+            let upcomingDate = scheduled;
+
+            if(event.repeat){
+                if (event.repeat.frequency === 'weekly' || event.repeat.frequency === 'monthly') {
+                    upcomingDate = getNextOccurrence(scheduled, event.repeat.frequency);
+                }
+            }
+
+            return {
+                ...event,
+                upcomingDate
+            };
+        });
 }
 
 export function calculateCompletionPercentage(startDate: Date, endDate: Date) {

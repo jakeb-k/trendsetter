@@ -1,20 +1,34 @@
 import CurrentGoals from '@/components/index/CurrentGoals';
+import NextEvents from '@/components/index/NextEvents';
 import TodaysFocus from '@/components/index/TodaysFocus';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { useEventsStore } from '@/stores/useEventStore';
 import { useGoalsStore } from '@/stores/useGoalStore';
-import { setTodaysEvents } from '@/utils/scheduleHandler';
+import { setTodaysEvents, setUpcomingEvents } from '@/utils/scheduleHandler';
 import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 
 export default function HomeScreen() {
-    const {events} = useEventsStore(); 
-    const {goals} = useGoalsStore(); 
+    const { events } = useEventsStore();
+    const { goals } = useGoalsStore();
 
     const todaysEvents = useMemo(() => {
-    return setTodaysEvents(events || []);
+        //@ts-ignore
+        return setTodaysEvents(events || []);
     }, [events]);
 
+    const upcomingEvents = useMemo(() => {
+        //@ts-ignore
+        return setUpcomingEvents(events);
+    }, [events]);
+
+    const groupedEvents = upcomingEvents.reduce((acc, event) => {
+        const dateKey = new Date(event.upcomingDate).toDateString(); // to group by day
+        if (!acc[dateKey]) acc[dateKey] = [];
+        //@ts-ignore
+        acc[dateKey].push(event);
+        return acc;
+    }, {} as Record<string, Event[]>);
 
     return (
         <ParallaxScrollView
@@ -41,17 +55,26 @@ export default function HomeScreen() {
         >
             <View
                 style={{ borderTopEndRadius: 32, borderTopStartRadius: 32 }}
-                className="bg-[#FEF3DA] min-h-screen rounded-t-xl px-4"
+                className="bg-[#FEF3DA] min-h-screen h-full rounded-t-xl px-4"
             >
                 <TodaysFocus todaysEvents={todaysEvents} />
                 <CurrentGoals goals={goals} />
-                {/* {Object.entries(events).map(([date, eventsList]) => (
-                    <NextEvents
-                        key={date}
-                        date={new Date(date)}
-                        events={eventsList}
-                    />
-                ))} */}
+                <Text className="text-[#8B3C00] font-semibold text-lg ml-1">
+                    Upcoming Events
+                </Text>
+                {Object.entries(groupedEvents)
+                    .sort(
+                        ([a], [b]) =>
+                            new Date(a).getTime() - new Date(b).getTime()
+                    )
+                    .map(([date, events]) => (
+                        <NextEvents
+                            key={date}
+                            date={new Date(date)}
+                            //@ts-ignore
+                            events={events}
+                        />
+                    ))}
             </View>
         </ParallaxScrollView>
     );
