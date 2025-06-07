@@ -10,3 +10,8 @@ export function isWeeklyTrigger(startDate: Date) {
 export function setTodaysEvents(events: Event[] = []): Event[] {
   return events.filter((event) => isWeeklyTrigger(event.scheduled_for));
 }
+
+export function setUpcomingEvents(events: Event[] = []): Event[] {
+    const newEvents = events; 
+    return events.filter((event) => isWeeklyTrigger(event.scheduled_for));
+}

@@ -1,10 +1,11 @@
+import Goal from '@/types/models/Goal';
 import { Text, View } from 'react-native';
 
-export default function CurrentGoal() {
+export default function CurrentGoals({goals}: {goals: Goal[]}) {
     const progressPercentage = 30;
     return (
         <View className="mb-2">
-            <Text className="text-[#8B3C00] font-semibold text-lg ml-1">Current Goal</Text>
+            <Text className="text-[#8B3C00] font-semibold text-lg ml-1">Current Goals</Text>
             <View className="bg-[#FDF7E8] drop-shadow-md rounded-lg p-2 mt-2">
                 <View className="flex flex-row justify-between">
                     <Text className="text-[#8B3C00] font-semibold text-base">
