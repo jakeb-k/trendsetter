@@ -1,4 +1,3 @@
-
 import Event from '@/types/models/Event';
 import moment from 'moment';
 
@@ -8,10 +7,20 @@ export function isWeeklyTrigger(startDate: Date) {
 }
 
 export function setTodaysEvents(events: Event[] = []): Event[] {
-  return events.filter((event) => isWeeklyTrigger(event.scheduled_for));
+    return events.filter((event) => isWeeklyTrigger(event.scheduled_for));
 }
 
 export function setUpcomingEvents(events: Event[] = []): Event[] {
-    const newEvents = events; 
+    const newEvents = events;
     return events.filter((event) => isWeeklyTrigger(event.scheduled_for));
+}
+
+export function calculateCompletionPercentage(startDate: Date, endDate: Date) {
+    const totalDiffInDays = moment(endDate).diff(moment(startDate), 'days');
+    const elapsedDiffInDays = moment().diff(moment(startDate), 'days');
+
+    const progress = (elapsedDiffInDays / totalDiffInDays) * 100;
+
+    // Clamp between 0 and 100 to avoid weird edge cases
+    return Math.min(100, Math.max(0, progress));
 }

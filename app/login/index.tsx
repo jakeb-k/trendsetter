@@ -30,7 +30,7 @@ export default function LoginScreen() {
             if (!response.error) {
                 const events = response.goals.flatMap((goal: Goal) => goal.events);
                 setEvents(events);
-                console.log(events);
+                setGoals(response.goals)
                 await AsyncStorage.setItem('token', response.token);
                 await AsyncStorage.setItem('user', JSON.stringify(response.user));
                 router.replace('/'); // go to index page, replacing login
