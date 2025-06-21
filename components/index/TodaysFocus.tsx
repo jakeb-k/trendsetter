@@ -7,7 +7,7 @@ export default function TodaysFocus({
 }: {
     todaysEvents: Event[];
 }) {
-    console.log(todaysEvents);
+
     return (
         <View className="bg-primary rounded-lg mb-2 mt-6 py-4 px-4 ">
             <Text className="text-white font-satoshi text-xl">
