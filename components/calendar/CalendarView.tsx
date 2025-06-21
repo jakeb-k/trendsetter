@@ -51,22 +51,15 @@ export default function CustomCalendarScreen({
                 renderHeader={() => null}
                 hideExtraDays={true}
                 hideDayNames={true}
-                // onDayPress={(day) => {
-                //     const newMarked = {
-                //         ...markedDates,
-                //         [day.dateString]: {
-                //             ...markedDates[day.dateString],
-                //             selected: true,
-                //             selectedColor: '#FF6B00',
-                //         },
-                //     };
-                //     setMarkedDates(newMarked);
-                // }}
                 markedDates={viewDate}
                 dayComponent={({ date, state }) => (
                     <CalendarDay
                         date={date}
                         state={state}
+                        isSelected={viewDate === date.dateString}
+                        onDayPress={(day) => {
+                            setViewDate(day.dateString);
+                        }}
                     />
                 )}
                 theme={{
