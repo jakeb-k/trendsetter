@@ -6,7 +6,19 @@ export function isWeeklyTrigger(startDate: Date) {
     return diffInDays % 7 === 0;
 }
 
-export function setDateEvents(events: Event[] = []): Event[] {
+export function isWeeklyTriggerFromSelectedDate(
+    startDate: Date,
+    selectedDate: Date
+) {
+    const diffInDays = moment(selectedDate).diff(moment(startDate), 'days');
+    return diffInDays % 7 === 0;
+}
+
+export function setDateEvents(events: Event[] = [], date?: string): Event[] {
+    if (date)
+        return events.filter((event) =>
+            isWeeklyTriggerFromSelectedDate(event.scheduled_for, new Date(date))
+        );
     return events.filter((event) => isWeeklyTrigger(event.scheduled_for));
 }
 
@@ -26,22 +38,30 @@ function getNextOccurrence(startDate: Date, type: 'weekly' | 'monthly'): Date {
     return next;
 }
 
-export function setUpcomingEvents(events: Event[] = []): (Event & { upcomingDate: Date })[] {
+export function setUpcomingEvents(
+    events: Event[] = []
+): (Event & { upcomingDate: Date })[] {
     return events
         .filter((event) => !isWeeklyTrigger(event.scheduled_for)) // skip unwanted ones
         .map((event) => {
             const scheduled = new Date(event.scheduled_for);
             let upcomingDate = scheduled;
 
-            if(event.repeat){
-                if (event.repeat.frequency === 'weekly' || event.repeat.frequency === 'monthly') {
-                    upcomingDate = getNextOccurrence(scheduled, event.repeat.frequency);
+            if (event.repeat) {
+                if (
+                    event.repeat.frequency === 'weekly' ||
+                    event.repeat.frequency === 'monthly'
+                ) {
+                    upcomingDate = getNextOccurrence(
+                        scheduled,
+                        event.repeat.frequency
+                    );
                 }
             }
 
             return {
                 ...event,
-                upcomingDate
+                upcomingDate,
             };
         });
 }
