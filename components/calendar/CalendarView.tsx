@@ -8,9 +8,11 @@ const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
 export default function CustomCalendarScreen({
     calendarBg,
+    eventDates,
     updateSelectedDate, 
 }: {
     calendarBg?: string;
+    eventDates?: string[]; 
     updateSelectedDate?: (date: string) => void;
 }) {
     const [currentDate, setCurrentDate] = useState(
@@ -54,10 +56,14 @@ export default function CustomCalendarScreen({
                 hideExtraDays={true}
                 hideDayNames={true}
                 markedDates={viewDate}
-                dayComponent={({ date, state }) => (
+                dayComponent={({ date, state }) =>{
+                    //@ts-ignore
+                    const eventCount = eventDates?.filter((eventDate) => eventDate === date.dateString).length || 0;
+                    return (
                     <CalendarDay
                         date={date}
                         state={state}
+                        eventCount={eventCount}
                         // @ts-ignore
                         isSelected={viewDate === date.dateString}
                         onDayPress={(day) => {
@@ -65,7 +71,7 @@ export default function CustomCalendarScreen({
                             updateSelectedDate?.(day.dateString);
                         }}
                     />
-                )}
+                )}}
                 theme={{
                     calendarBackground: calendarBg,
                     backgroundColor: calendarBg,

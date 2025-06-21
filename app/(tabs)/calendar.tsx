@@ -4,7 +4,10 @@ import TitleText from '@/components/common/TitleText';
 import { ThemedView } from '@/components/ThemedView';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useEventsStore } from '@/stores/useEventStore';
-import { setDateEvents } from '@/utils/scheduleHandler';
+import {
+    createDateArrayForCurrentMonth,
+    setDateEvents,
+} from '@/utils/scheduleHandler';
 import Entypo from '@expo/vector-icons/Entypo';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
@@ -14,7 +17,9 @@ export default function CalendarScreen() {
     const { events } = useEventsStore();
 
     const [selectedDate, setSelectedDate] = useState(new Date().toDateString());
-    const [selectedDateEvents, setSelectedDateEvents] = useState(setDateEvents(events || [], selectedDate));
+    const [selectedDateEvents, setSelectedDateEvents] = useState(
+        setDateEvents(events || [], selectedDate)
+    );
 
     const [month, setMonth] = useState(moment().format('MMMM YYYY'));
     const backgroundColor = useThemeColor(
@@ -22,9 +27,13 @@ export default function CalendarScreen() {
         'background'
     );
 
+    const [eventDates, setEventDates] = useState<string[]>(
+        createDateArrayForCurrentMonth(month, events || [])
+    );
+
     useEffect(() => {
         setSelectedDateEvents(setDateEvents(events || [], selectedDate));
-    },[selectedDate, events])
+    }, [selectedDate, events]);
     return (
         <ThemedView className="min-h-screen w-full px-4">
             <View className="flex flex-row items-center justify-between mt-12 pl-4">
@@ -34,6 +43,7 @@ export default function CalendarScreen() {
                 </TouchableOpacity>
             </View>
             <CalendarView
+                eventDates={eventDates}
                 calendarBg={backgroundColor}
                 updateSelectedDate={setSelectedDate}
             />

@@ -22,6 +22,30 @@ export function setDateEvents(events: Event[] = [], date?: string): Event[] {
     return events.filter((event) => isWeeklyTrigger(event.scheduled_for));
 }
 
+export function createDateArrayForCurrentMonth(
+    month: string,
+    events: Event[]
+): string[] {
+    let startDate = moment(month, 'MMMM YYYY').startOf('month');
+    const endOfMonth = moment(month, 'MMMM YYYY').endOf('month');
+    let datesArray: string[] = [];
+    while (startDate.isBefore(endOfMonth)) {
+        const matchedEvents = events.filter((event) =>
+            isWeeklyTriggerFromSelectedDate(
+                event.scheduled_for,
+                new Date(startDate.format('YYYY-MM-DD'))
+            )
+        );
+        matchedEvents.forEach(() => {
+            datesArray.push(startDate.format('YYYY-MM-DD'));
+        })
+        
+        startDate = startDate.add(1, 'day');
+    }
+
+    return datesArray;
+}
+
 function getNextOccurrence(startDate: Date, type: 'weekly' | 'monthly'): Date {
     const now = new Date();
     let next = new Date(startDate);
