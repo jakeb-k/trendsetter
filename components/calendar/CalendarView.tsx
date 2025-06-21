@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import CalendarDay from './CalendarDay';
 
@@ -8,8 +8,10 @@ const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
 export default function CustomCalendarScreen({
     calendarBg,
+    updateSelectedDate, 
 }: {
     calendarBg?: string;
+    updateSelectedDate?: (date: string) => void;
 }) {
     const [currentDate, setCurrentDate] = useState(
         dayjs().format('YYYY-MM-DD')
@@ -56,9 +58,11 @@ export default function CustomCalendarScreen({
                     <CalendarDay
                         date={date}
                         state={state}
+                        // @ts-ignore
                         isSelected={viewDate === date.dateString}
                         onDayPress={(day) => {
                             setViewDate(day.dateString);
+                            updateSelectedDate?.(day.dateString);
                         }}
                     />
                 )}
@@ -79,25 +83,3 @@ export default function CustomCalendarScreen({
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        backgroundColor: '#fff',
-    },
-    monthText: {
-        fontSize: 24,
-        fontWeight: 'bold',
-    },
-    weekRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        marginBottom: 5,
-    },
-    weekText: {
-        fontSize: 16,
-        fontWeight: '500',
-        width: 32,
-        textAlign: 'center',
-        color: '#000',
-    },
-});

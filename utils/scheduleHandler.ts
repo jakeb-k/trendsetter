@@ -6,7 +6,7 @@ export function isWeeklyTrigger(startDate: Date) {
     return diffInDays % 7 === 0;
 }
 
-export function setTodaysEvents(events: Event[] = []): Event[] {
+export function setDateEvents(events: Event[] = []): Event[] {
     return events.filter((event) => isWeeklyTrigger(event.scheduled_for));
 }
 
