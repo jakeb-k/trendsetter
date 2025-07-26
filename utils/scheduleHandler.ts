@@ -6,8 +6,44 @@ export function isWeeklyTrigger(startDate: Date) {
     return diffInDays % 7 === 0;
 }
 
-export function setTodaysEvents(events: Event[] = []): Event[] {
+export function isWeeklyTriggerFromSelectedDate(
+    startDate: Date,
+    selectedDate: Date
+) {
+    const diffInDays = moment(selectedDate).diff(moment(startDate), 'days');
+    return diffInDays % 7 === 0;
+}
+
+export function setDateEvents(events: Event[] = [], date?: string): Event[] {
+    if (date)
+        return events.filter((event) =>
+            isWeeklyTriggerFromSelectedDate(event.scheduled_for, new Date(date))
+        );
     return events.filter((event) => isWeeklyTrigger(event.scheduled_for));
+}
+
+export function createDateArrayForCurrentMonth(
+    month: string,
+    events: Event[]
+): string[] {
+    let startDate = moment(month, 'MMMM YYYY').startOf('month');
+    const endOfMonth = moment(month, 'MMMM YYYY').endOf('month');
+    let datesArray: string[] = [];
+    while (startDate.isBefore(endOfMonth)) {
+        const matchedEvents = events.filter((event) =>
+            isWeeklyTriggerFromSelectedDate(
+                event.scheduled_for,
+                new Date(startDate.format('YYYY-MM-DD'))
+            )
+        );
+        matchedEvents.forEach(() => {
+            datesArray.push(startDate.format('YYYY-MM-DD'));
+        })
+        
+        startDate = startDate.add(1, 'day');
+    }
+
+    return datesArray;
 }
 
 function getNextOccurrence(startDate: Date, type: 'weekly' | 'monthly'): Date {
@@ -26,22 +62,30 @@ function getNextOccurrence(startDate: Date, type: 'weekly' | 'monthly'): Date {
     return next;
 }
 
-export function setUpcomingEvents(events: Event[] = []): (Event & { upcomingDate: Date })[] {
+export function setUpcomingEvents(
+    events: Event[] = []
+): (Event & { upcomingDate: Date })[] {
     return events
         .filter((event) => !isWeeklyTrigger(event.scheduled_for)) // skip unwanted ones
         .map((event) => {
             const scheduled = new Date(event.scheduled_for);
             let upcomingDate = scheduled;
 
-            if(event.repeat){
-                if (event.repeat.frequency === 'weekly' || event.repeat.frequency === 'monthly') {
-                    upcomingDate = getNextOccurrence(scheduled, event.repeat.frequency);
+            if (event.repeat) {
+                if (
+                    event.repeat.frequency === 'weekly' ||
+                    event.repeat.frequency === 'monthly'
+                ) {
+                    upcomingDate = getNextOccurrence(
+                        scheduled,
+                        event.repeat.frequency
+                    );
                 }
             }
 
             return {
                 ...event,
-                upcomingDate
+                upcomingDate,
             };
         });
 }

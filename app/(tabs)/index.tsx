@@ -4,7 +4,7 @@ import TodaysFocus from '@/components/index/TodaysFocus';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { useEventsStore } from '@/stores/useEventStore';
 import { useGoalsStore } from '@/stores/useGoalStore';
-import { setTodaysEvents, setUpcomingEvents } from '@/utils/scheduleHandler';
+import { setDateEvents, setUpcomingEvents } from '@/utils/scheduleHandler';
 import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 
@@ -14,7 +14,7 @@ export default function HomeScreen() {
 
     const todaysEvents = useMemo(() => {
         //@ts-ignore
-        return setTodaysEvents(events || []);
+        return setDateEvents(events || []);
     }, [events]);
 
     const upcomingEvents = useMemo(() => {
