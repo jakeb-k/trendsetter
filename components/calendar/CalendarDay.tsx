@@ -17,7 +17,7 @@ export default function CalendarDay({
         <TouchableOpacity
             className={`
     w-10 h-10 rounded-xl border border-[#FF6B00]
-    justify-center items-center relative overflow-hidden
+    justify-center items-center
     ${state === 'disabled' ? 'opacity-30' : ''}
     ${state === 'today' ? 'bg-[#FF6B0040]' : ''}
     ${isSelected ? 'bg-[#FF6B0080]' : ''}
@@ -27,11 +27,16 @@ export default function CalendarDay({
         >
             {/* //@ts-ignore */}
             <Text style={{ color: '#fff' }}>{date.day}</Text>
-            <View className="flex flex-row justify-center absolute bottom-0.5">
-                {Array.from({ length: eventCount }).map((_, i) => (
+            {eventCount > 0 && (
+                <View className="flex flex-row justify-center items-center absolute -top-2 -right-2 h-5 w-5 rounded-full bg-primary z-50">
+                    <Text className="text-white font-bold font-satoshi">
+                        {eventCount}
+                    </Text>
+                    {/* {Array.from({ length: eventCount }).map((_, i) => (
                     <View key={i} className="h-1.5 w-1.5 rounded-full bg-primary mr-0.5"></View>
-                ))}
-            </View>
+                ))} */}
+                </View>
+            )}
         </TouchableOpacity>
     );
 }

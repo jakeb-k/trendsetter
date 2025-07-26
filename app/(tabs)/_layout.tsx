@@ -44,7 +44,7 @@ export default function TabLayout() {
                 options={{
                     title: 'Home',
                     tabBarIcon: ({ color }) => (
-                        <AntDesign name="plus" size={24} color="#8B3C00" />
+                        <AntDesign name="home" size={24} color="#8B3C00" />
                     ),
                 }}
             />
@@ -64,6 +64,12 @@ export default function TabLayout() {
                     tabBarIcon: ({ color }) => (
                         <Entypo name="bar-graph" size={24} color="#8B3C00" />
                     ),
+                }}
+            />
+            <Tabs.Screen
+                name="events"
+                options={{
+                    href: null,
                 }}
             />
         </Tabs>
