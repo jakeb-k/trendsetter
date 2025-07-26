@@ -33,13 +33,14 @@ export default function CalendarDayInfo({
                     <Text className="text-lg font-satoshi_italic mb-4 text-white text-left">
                         You have nothing scheduled for today
                     </Text>
-                    <PrimaryButton>
-                        <Text className="text-white text-center font-satoshi text-lg font-bold">
-                            Add Event
-                        </Text>
-                    </PrimaryButton>
                 </>
             )}
+
+            <PrimaryButton className='mt-4'>
+                <Text className="text-white text-center font-satoshi text-lg font-bold">
+                    Add Event
+                </Text>
+            </PrimaryButton>
         </View>
     );
 }
