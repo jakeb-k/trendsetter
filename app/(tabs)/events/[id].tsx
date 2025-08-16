@@ -20,6 +20,7 @@ export default function EventDetailLayout() {
         events.find((event) => event.id.toString() === id)
     );
     const [eventFeedback, setEventFeedback] = useState<EventFeedback[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function getSelectedDate() {
@@ -34,6 +35,7 @@ export default function EventDetailLayout() {
             if (data) {
                 console.log(data);
                 setEventFeedback(data.feedback);
+                setLoading(false);
             } else {
                 console.error('Failed to fetch event feedback');
             }
@@ -50,7 +52,7 @@ export default function EventDetailLayout() {
 
     if (event) {
         return (
-            <ScrollView className="flex-1 pb-32">
+            <ScrollView className="flex-1 bg-secondary">
                 <ThemedView className="min-h-screen w-full px-8 overflow-y-scroll">
                     <View className="flex flex-col w-full mt-6">
                         <TouchableOpacity>
@@ -87,16 +89,25 @@ export default function EventDetailLayout() {
                             Log Progress
                         </Text>
                     </PrimaryButton>
-                    <View className="mt-6">
-                        <Text className="text-white text-lg font-satoshi font-bold">
+                    <View className="mt-6 h-fit pb-32">
+                        <Text className={`text-white text-lg font-satoshi font-bold ${loading ? 'pb-32' : ''}`}>
                             History
                         </Text>
-                        {eventFeedback.map((eventFeedbackItem) => (
-                            <EventFeedbackInfo
-                                key={eventFeedbackItem.id}
-                                {...eventFeedbackItem}
-                            />
-                        ))}
+
+                        {loading ? (
+                            <View className="w-full flex flex-col items-center justify-center">
+                                <View className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></View>
+                            </View>
+                        ) : (
+                            <>
+                                {eventFeedback.map((eventFeedbackItem) => (
+                                    <EventFeedbackInfo
+                                        key={eventFeedbackItem.id}
+                                        {...eventFeedbackItem}
+                                    />
+                                ))}
+                            </>
+                        )}
                     </View>
                 </ThemedView>
             </ScrollView>
