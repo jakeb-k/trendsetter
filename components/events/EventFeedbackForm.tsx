@@ -1,4 +1,4 @@
-import { MoodOptions } from '@/constants/Enums';
+import { MoodOptions, StatusOptions } from '@/constants/Enums';
 import Event from '@/types/models/Event';
 import EventFeedback from '@/types/models/EventFeedback';
 import moment from 'moment';
@@ -11,7 +11,7 @@ export default function EventFeedbackForm({ eventFeedback, event }: Props) {
     const [data, setData] = useState({
         note: eventFeedback?.note ?? '',
         status: eventFeedback?.status ?? '',
-        mood: eventFeedback?.mood ?? 'happy',
+        mood: eventFeedback?.mood ?? '',
         created_at: new Date(),
     });
     return (
@@ -26,7 +26,7 @@ export default function EventFeedbackForm({ eventFeedback, event }: Props) {
                 Record your progress for this event
             </Text>
             <Text className="font-satoshi text-white mt-2">Mood</Text>
-            <View className='flex flex-row items-center justify-start space-x-4 my-2'>
+            <View className="flex flex-row items-center justify-start space-x-4 my-2">
                 {Object.entries(MoodOptions).map(([key, value]) => {
                     const Icon = value;
                     return (
@@ -37,13 +37,38 @@ export default function EventFeedbackForm({ eventFeedback, event }: Props) {
                             }`}
                             onPress={() => setData({ ...data, mood: key })}
                         >
-                        <Icon className='transition-all duration-150 ease-in-out' width={40} height={40} fill={`${data.mood === key ? '#FF6B00' : ''}`} />
+                            <Icon
+                                className="transition-all duration-150 ease-in-out"
+                                width={40}
+                                height={40}
+                                fill={`${data.mood === key ? '#FF6B00' : ''}`}
+                            />
                         </TouchableOpacity>
-                    )
-                }
-                )}
+                    );
+                })}
             </View>
             <Text className="font-satoshi text-white mt-2">Progress</Text>
+            <View className="flex flex-row items-center justify-start space-x-6 my-2">
+                {Object.entries(StatusOptions).map(([key, value]) => {
+                    const Icon = value; 
+                    return (
+                        <TouchableOpacity
+                            key={key}
+                            className={`text-lg font-satoshi text-white ${
+                                data.status === key ? 'font-bold' : ''
+                            }`}
+                            onPress={() => setData({ ...data, status: key })}
+                        >
+                            <Icon
+                                className="transition-all duration-150 ease-in-out"
+                                width={40}
+                                height={40}
+                                fill={`${data.status === key ? '#FF6B00' : ''}`}
+                            />
+                        </TouchableOpacity>
+                    );
+                })}
+            </View>
         </View>
     );
 }

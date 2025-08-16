@@ -10,8 +10,14 @@ import { Entypo } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams } from 'expo-router';
 import moment from 'moment';
-import { useEffect, useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import {
+    Animated,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
+} from 'react-native';
 
 export default function EventDetailLayout() {
     const { id } = useLocalSearchParams();
@@ -22,7 +28,10 @@ export default function EventDetailLayout() {
     );
     const [eventFeedback, setEventFeedback] = useState<EventFeedback[]>([]);
     const [loading, setLoading] = useState(true);
-    const [isLogging, setIsLogging] = useState(false);  
+    const [isLogging, setIsLogging] = useState(false);
+
+    const opacity = useRef(new Animated.Value(0)).current;
+    const scale = useRef(new Animated.Value(0.9)).current;
 
     useEffect(() => {
         async function getSelectedDate() {
@@ -52,6 +61,23 @@ export default function EventDetailLayout() {
         return getEventFeedbackHistory(id.toString());
     };
 
+    useEffect(() => {
+        if (isLogging) {
+            opacity.setValue(0);
+            scale.setValue(0.9);
+            Animated.spring(scale, {
+                toValue: 1,
+                useNativeDriver: true,
+                friction: 6,
+            }).start();
+            Animated.timing(opacity, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: true,
+            }).start();
+        }
+    }, [isLogging]);
+
     if (event) {
         return (
             <ScrollView className="flex-1 bg-secondary">
@@ -78,7 +104,7 @@ export default function EventDetailLayout() {
                             7 STREAK
                         </Text>
                     </View>
-                    <View className="">
+                    <View className="mb-6">
                         <Text className="text-white text-lg font-satoshi font-bold mt-6">
                             Description
                         </Text>
@@ -86,16 +112,28 @@ export default function EventDetailLayout() {
                             {event.description}
                         </Text>
                     </View>
-                    <View className="">
-                        <EventFeedbackForm event={event} />
-                    </View>
-                    <PrimaryButton onPress={() => setIsLogging(!isLogging)} className="mt-6">
+                    {isLogging && (
+                        <Animated.View
+                            style={{ opacity, transform: [{ scale }] }}
+                        >
+                            <EventFeedbackForm event={event} />
+                        </Animated.View>
+                    )}
+                    <PrimaryButton
+                        onPress={() => setIsLogging(!isLogging)}
+                        className="my-3"
+                    >
                         <Text className="text-white text-center font-satoshi text-lg font-bold">
-                            Log Progress
+                            {isLogging ? 'Save' : 'Log Progress'}
                         </Text>
                     </PrimaryButton>
+
                     <View className="mt-6 h-fit pb-32">
-                        <Text className={`text-white text-lg font-satoshi font-bold ${loading ? 'pb-32' : ''}`}>
+                        <Text
+                            className={`text-white text-lg font-satoshi font-bold ${
+                                loading ? 'pb-32' : ''
+                            }`}
+                        >
                             History
                         </Text>
 
