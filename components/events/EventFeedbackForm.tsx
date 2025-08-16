@@ -1,20 +1,25 @@
+import { storeEventFeedback } from '@/api/eventsApi';
 import { MoodOptions, StatusOptions } from '@/constants/Enums';
 import Event from '@/types/models/Event';
 import EventFeedback from '@/types/models/EventFeedback';
 import { AntDesign } from '@expo/vector-icons';
 import moment from 'moment';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 type Props = {
     eventFeedback?: EventFeedback;
     event: Event;
+    isSubmitting: boolean;
+    setNewData: (newEvent: any) => void;
     closeForm: () => void;
 };
 
 export default function EventFeedbackForm({
     eventFeedback,
     event,
+    isSubmitting,
+    setNewData, 
     closeForm,
 }: Props) {
     const [data, setData] = useState({
@@ -23,6 +28,18 @@ export default function EventFeedbackForm({
         mood: eventFeedback?.mood ?? '',
         created_at: new Date(),
     });
+
+    useEffect(() => {
+        async function handleEventFeedbackRequest(){
+            const newEvent = await storeEventFeedback(data, event.id.toString())
+            if(!newEvent.error){
+                 
+            } else {
+                console.error(newEvent.error)
+            }
+        }
+    }, [isSubmitting])
+
     return (
         <View className="pl-4 my-4 border-2 border-primary shadow-lg shadow-primary rounded-lg p-2 relative">
             <TouchableOpacity

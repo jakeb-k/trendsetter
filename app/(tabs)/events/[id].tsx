@@ -29,6 +29,7 @@ export default function EventDetailLayout() {
     const [eventFeedback, setEventFeedback] = useState<EventFeedback[]>([]);
     const [loading, setLoading] = useState(true);
     const [isLogging, setIsLogging] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const opacity = useRef(new Animated.Value(0)).current;
     const scale = useRef(new Animated.Value(0.9)).current;
@@ -116,7 +117,12 @@ export default function EventDetailLayout() {
                         <Animated.View
                             style={{ opacity, transform: [{ scale }] }}
                         >
-                            <EventFeedbackForm event={event} closeForm={() => setIsLogging(false)} />
+                            <EventFeedbackForm
+                                event={event}
+                                closeForm={() => setIsLogging(false)}
+                                isSubmitting={isSubmitting}
+                                setNewData={(newEvent: any) => setEventFeedback([...eventFeedback, newEvent]) }
+                            />
                         </Animated.View>
                     )}
                     <PrimaryButton
