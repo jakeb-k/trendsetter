@@ -116,7 +116,7 @@ export default function EventDetailLayout() {
                         <Animated.View
                             style={{ opacity, transform: [{ scale }] }}
                         >
-                            <EventFeedbackForm event={event} />
+                            <EventFeedbackForm event={event} closeForm={() => setIsLogging(false)} />
                         </Animated.View>
                     )}
                     <PrimaryButton

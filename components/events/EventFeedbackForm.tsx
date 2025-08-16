@@ -1,13 +1,22 @@
 import { MoodOptions, StatusOptions } from '@/constants/Enums';
 import Event from '@/types/models/Event';
 import EventFeedback from '@/types/models/EventFeedback';
+import { AntDesign } from '@expo/vector-icons';
 import moment from 'moment';
 import { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-type Props = { eventFeedback?: EventFeedback; event: Event };
+type Props = {
+    eventFeedback?: EventFeedback;
+    event: Event;
+    closeForm: () => void;
+};
 
-export default function EventFeedbackForm({ eventFeedback, event }: Props) {
+export default function EventFeedbackForm({
+    eventFeedback,
+    event,
+    closeForm,
+}: Props) {
     const [data, setData] = useState({
         note: eventFeedback?.note ?? '',
         status: eventFeedback?.status ?? '',
@@ -16,6 +25,12 @@ export default function EventFeedbackForm({ eventFeedback, event }: Props) {
     });
     return (
         <View className="pl-4 my-4 border-2 border-primary shadow-lg shadow-primary rounded-lg p-2 relative">
+            <TouchableOpacity
+                className="absolute top-2 right-4 z-50"
+                onPress={closeForm}
+            >
+                <AntDesign name={'closecircleo'} size={24} color="white" />
+            </TouchableOpacity>
             <Text className="text-lg font-satoshi text-white">
                 Log Progress - {moment(data.created_at).format('ddd Do MMM')}
             </Text>
@@ -50,7 +65,7 @@ export default function EventFeedbackForm({ eventFeedback, event }: Props) {
             <Text className="font-satoshi text-white mt-2">Progress</Text>
             <View className="flex flex-row items-center justify-start space-x-6 my-2">
                 {Object.entries(StatusOptions).map(([key, value]) => {
-                    const Icon = value; 
+                    const Icon = value;
                     return (
                         <TouchableOpacity
                             key={key}
