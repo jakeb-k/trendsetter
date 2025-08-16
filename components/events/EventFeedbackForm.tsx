@@ -4,7 +4,7 @@ import EventFeedback from '@/types/models/EventFeedback';
 import { AntDesign } from '@expo/vector-icons';
 import moment from 'moment';
 import { useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 type Props = {
     eventFeedback?: EventFeedback;
@@ -40,7 +40,7 @@ export default function EventFeedbackForm({
             <Text className="text-sm font-satoshi_italic text-gray-400">
                 Record your progress for this event
             </Text>
-            <Text className="font-satoshi text-white mt-2">Mood</Text>
+            <Text className="text-lg font-satoshi text-white mt-2">Mood</Text>
             <View className="flex flex-row items-center justify-start space-x-4 my-2">
                 {Object.entries(MoodOptions).map(([key, value]) => {
                     const Icon = value;
@@ -62,28 +62,44 @@ export default function EventFeedbackForm({
                     );
                 })}
             </View>
-            <Text className="font-satoshi text-white mt-2">Progress</Text>
-            <View className="flex flex-row items-center justify-start space-x-6 my-2">
+            <Text className="text-lg font-satoshi text-white mt-2">
+                Progress
+            </Text>
+            <View className="flex flex-wrap flex-row items-center justify-start mr-4 my-2">
                 {Object.entries(StatusOptions).map(([key, value]) => {
                     const Icon = value;
                     return (
                         <TouchableOpacity
                             key={key}
-                            className={`text-lg font-satoshi text-white ${
-                                data.status === key ? 'font-bold' : ''
+                            className={`text-lg font-satoshi text-white flex flex-row items-center justify-start space-x-4  mt-2 px-2 py-1 rounded-lg w-[47.5%] mr-[2.5%] transition-all duration-150 ease-in-out ${
+                                data.status === key ? 'bg-primary' : 'bg-secondary'
                             }`}
                             onPress={() => setData({ ...data, status: key })}
                         >
                             <Icon
                                 className="transition-all duration-150 ease-in-out"
-                                width={40}
-                                height={40}
-                                fill={`${data.status === key ? '#FF6B00' : ''}`}
+                                width={key === 'nailed_it' ? 26 : 32}
+                                height={key === 'nailed_it' ? 26 : 32}
                             />
+                            <Text className='text-white font-satoshi'>
+                                {(key.charAt(0).toUpperCase() + key.slice(1)).replace('_', ' ')}                                
+                            </Text>
                         </TouchableOpacity>
                     );
                 })}
             </View>
+            <Text className="text-lg font-satoshi text-white mt-2">Note</Text>
+            <TextInput
+                multiline={true}
+                value={data.note}
+                textAlignVertical="top"
+                placeholder="Add any notes..."
+                placeholderTextColor="#ccc"
+                style={{ maxHeight: 240 }}
+                onChangeText={(text) => setData({ ...data, note: text })}
+                onSubmitEditing={() => console.log('bababooey')}
+                className="bg-white/10 text-white px-4 py-3 backdrop-blur-xl rounded-xl mt-2 mb-4 mr-2"
+            />
         </View>
     );
 }
