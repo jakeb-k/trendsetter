@@ -1,6 +1,7 @@
 import { getEventFeedbackHistory } from '@/api/eventsApi';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import TitleText from '@/components/common/TitleText';
+import EventFeedbackForm from '@/components/events/EventFeedbackForm';
 import EventFeedbackInfo from '@/components/events/EventFeedbackInfo';
 import { ThemedView } from '@/components/ThemedView';
 import { useEventsStore } from '@/stores/useEventStore';
@@ -21,6 +22,7 @@ export default function EventDetailLayout() {
     );
     const [eventFeedback, setEventFeedback] = useState<EventFeedback[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isLogging, setIsLogging] = useState(false);  
 
     useEffect(() => {
         async function getSelectedDate() {
@@ -33,7 +35,7 @@ export default function EventDetailLayout() {
             if (!id) return;
             const data = await requestEventFeedbackHistory(id.toString());
             if (data) {
-                console.log(data);
+                //console.log(data);
                 setEventFeedback(data.feedback);
                 setLoading(false);
             } else {
@@ -84,7 +86,10 @@ export default function EventDetailLayout() {
                             {event.description}
                         </Text>
                     </View>
-                    <PrimaryButton className="mt-6">
+                    <View className="">
+                        <EventFeedbackForm event={event} />
+                    </View>
+                    <PrimaryButton onPress={() => setIsLogging(!isLogging)} className="mt-6">
                         <Text className="text-white text-center font-satoshi text-lg font-bold">
                             Log Progress
                         </Text>
