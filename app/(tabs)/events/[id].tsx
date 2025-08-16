@@ -6,7 +6,7 @@ import EventFeedbackInfo from '@/components/events/EventFeedbackInfo';
 import { ThemedView } from '@/components/ThemedView';
 import { useEventsStore } from '@/stores/useEventStore';
 import EventFeedback from '@/types/models/EventFeedback';
-import { Entypo } from '@expo/vector-icons';
+import { AntDesign, Entypo } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams } from 'expo-router';
 import moment from 'moment';
@@ -28,6 +28,7 @@ export default function EventDetailLayout() {
     );
     const [eventFeedback, setEventFeedback] = useState<EventFeedback[]>([]);
     const [loading, setLoading] = useState(true);
+    const [success, setSuccess] = useState(false);
     const [isLogging, setIsLogging] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -121,17 +122,50 @@ export default function EventDetailLayout() {
                                 event={event}
                                 closeForm={() => setIsLogging(false)}
                                 isSubmitting={isSubmitting}
-                                setNewData={(newEvent: any) => setEventFeedback([...eventFeedback, newEvent]) }
+                                setNewData={(newEvent: any) => {
+                                    setEventFeedback([
+                                        ...eventFeedback,
+                                        newEvent,
+                                    ]);
+                                    setSuccess(true);
+                                    setIsLogging(false);
+                                    setIsSubmitting(false);
+                                }}
                             />
                         </Animated.View>
                     )}
                     <PrimaryButton
-                        onPress={() => setIsLogging(!isLogging)}
-                        className="my-3"
+                        onPress={() => {
+                            if (!isLogging) {
+                                setIsLogging(true);
+                            } else {
+                                setIsSubmitting(true);
+                            }
+                        }}
+                        className={`my-3 ${
+                            success ? 'bg-green-500 shadow-green-500' : ''
+                        }`}
                     >
                         <Text className="text-white text-center font-satoshi text-lg font-bold">
-                            {isLogging ? 'Save' : 'Log Progress'}
+                            {isLogging
+                                ? isSubmitting
+                                    ? 'Saving'
+                                    : 'Save'
+                                : success
+                                ? 'Saved'
+                                : 'Log Progress'}
                         </Text>
+                        {isSubmitting && (
+                            <View className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin ml-4 absolute left-[57.5%] mt-1" />
+                        )}
+                        {success && (
+                            <AntDesign
+                                className="absolute left-[59.5%]"
+                                name="check"
+                                size={28}
+                                color={'white'}
+                            />
+                        )}
                     </PrimaryButton>
 
                     <View className="mt-6 h-fit pb-32">
@@ -142,10 +176,9 @@ export default function EventDetailLayout() {
                         >
                             History
                         </Text>
-
                         {loading ? (
-                            <View className="w-full flex flex-col items-center justify-center">
-                                <View className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></View>
+                            <View className="w-full flex flex-col items-center justify-center h-full pt-24">
+                                <View className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin" />
                             </View>
                         ) : (
                             <>

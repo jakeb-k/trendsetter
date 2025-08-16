@@ -19,7 +19,7 @@ export default function EventFeedbackForm({
     eventFeedback,
     event,
     isSubmitting,
-    setNewData, 
+    setNewData,
     closeForm,
 }: Props) {
     const [data, setData] = useState({
@@ -30,15 +30,22 @@ export default function EventFeedbackForm({
     });
 
     useEffect(() => {
-        async function handleEventFeedbackRequest(){
-            const newEvent = await storeEventFeedback(data, event.id.toString())
-            if(!newEvent.error){
-                 
+        async function handleEventFeedbackRequest() {
+            console.log('sending')
+            const newEvent = await storeEventFeedback(
+                data,
+                event.id.toString()
+            );
+            if (!newEvent.error) {
+                setNewData(newEvent);
             } else {
-                console.error(newEvent.error)
+                console.error(newEvent.error);
             }
         }
-    }, [isSubmitting])
+        if(isSubmitting) {
+            handleEventFeedbackRequest()
+        }
+    }, [isSubmitting]);
 
     return (
         <View className="pl-4 my-4 border-2 border-primary shadow-lg shadow-primary rounded-lg p-2 relative">
@@ -89,7 +96,9 @@ export default function EventFeedbackForm({
                         <TouchableOpacity
                             key={key}
                             className={`text-lg font-satoshi text-white flex flex-row items-center justify-start space-x-4  mt-2 px-2 py-1 rounded-lg w-[47.5%] mr-[2.5%] transition-all duration-150 ease-in-out ${
-                                data.status === key ? 'bg-primary' : 'bg-secondary'
+                                data.status === key
+                                    ? 'bg-primary'
+                                    : 'bg-secondary'
                             }`}
                             onPress={() => setData({ ...data, status: key })}
                         >
@@ -98,8 +107,10 @@ export default function EventFeedbackForm({
                                 width={key === 'nailed_it' ? 26 : 32}
                                 height={key === 'nailed_it' ? 26 : 32}
                             />
-                            <Text className='text-white font-satoshi'>
-                                {(key.charAt(0).toUpperCase() + key.slice(1)).replace('_', ' ')}                                
+                            <Text className="text-white font-satoshi">
+                                {(
+                                    key.charAt(0).toUpperCase() + key.slice(1)
+                                ).replace('_', ' ')}
                             </Text>
                         </TouchableOpacity>
                     );
