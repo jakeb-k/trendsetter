@@ -13,10 +13,10 @@ export const Moods: Record<string, string> = {
 };
 
 export const MoodOptions: Record<string, FC<SvgProps>> = {
-    happy: HappyIcon,
-    good: GoodIcon,
-    meh: MehIcon,
     frustrated: FrustratedIcon,
+    meh: MehIcon,
+    good: GoodIcon,
+    happy: HappyIcon,
 };
 
 export const Statuses: Record<string, [string, string]> = {
