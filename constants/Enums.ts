@@ -1,8 +1,22 @@
+import MehIcon from '@/assets/icons/emoji-quite.svg';
+import FrustratedIcon from '@/assets/icons/emoji-sad.svg';
+import GoodIcon from '@/assets/icons/emoji-smile.svg';
+import HappyIcon from '@/assets/icons/emoji-talking-happy.svg';
+import type { FC } from 'react';
+import type { SvgProps } from 'react-native-svg';
+
 export const Moods: Record<string, string> = {
     happy: '😄',
     good: '😊',
     meh: '😐',
     frustrated: '😩',
+};
+
+export const MoodOptions: Record<string, FC<SvgProps>> = {
+    happy: HappyIcon,
+    good: GoodIcon,
+    meh: MehIcon,
+    frustrated: FrustratedIcon,
 };
 
 export const Statuses: Record<string, [string, string]> = {
