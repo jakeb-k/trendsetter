@@ -35,11 +35,6 @@ export default function CalendarScreen() {
         setSelectedDateEvents(setDateEvents(events || [], selectedDate));
     }, [selectedDate, events]);
 
-    // useEffect(() => {
-    //     setCurrentEvents((events: any) => {
-    //         return events.filter((event: Event) => event. )
-    //     })
-    // }, [events])
 
     return (
         <ThemedView className="min-h-screen w-full px-4">

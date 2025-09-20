@@ -1,6 +1,7 @@
 import Event from '@/types/models/Event';
+import { router } from 'expo-router';
 import moment from 'moment';
-import { Text, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 export default function NextEvents({
     events,
@@ -9,9 +10,18 @@ export default function NextEvents({
     events: Event[];
     date: Date;
 }) {
+    console.log(events); 
     return (
         // should have slide actions of cancelling or completing
-        <View className="bg-[#1A1A1A] drop-shadow-md rounded-lg p-2 flex flex-row items-center space-x-6 mt-2 pl-6">
+        <TouchableOpacity
+            onPress={() => {
+                router.push({
+                    pathname: '/events/[id]',
+                    params: { id: events[0].id },
+                });
+            }}
+            className="bg-[#1A1A1A] drop-shadow-md rounded-lg p-2 flex flex-row items-center space-x-6 mt-2 pl-6"
+        >
             <View className="flex flex-col items-center">
                 <Text className="text-lg text-lightprimary font-semibold">
                     {moment(date).format('MMM')}
@@ -24,12 +34,14 @@ export default function NextEvents({
                 {events.map((event: Event, index: number) => (
                     <Text
                         key={index}
-                        className={`text-white py-1 text-base font-satoshi ${index > 0 ? 'border-t' : ''} border-primary`}
+                        className={`text-white py-1 text-base font-satoshi ${
+                            index > 0 ? 'border-t' : ''
+                        } border-primary`}
                     >
                         {event.title}
                     </Text>
                 ))}
             </View>
-        </View>
+        </TouchableOpacity>
     );
 }
