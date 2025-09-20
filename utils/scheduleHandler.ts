@@ -38,8 +38,8 @@ export function createDateArrayForCurrentMonth(
         );
         matchedEvents.forEach(() => {
             datesArray.push(startDate.format('YYYY-MM-DD'));
-        })
-        
+        });
+
         startDate = startDate.add(1, 'day');
     }
 
@@ -65,7 +65,13 @@ function getNextOccurrence(startDate: Date, type: 'weekly' | 'monthly'): Date {
 export function setUpcomingEvents(
     events: Event[] = []
 ): (Event & { upcomingDate: Date })[] {
+    console.log(events); 
     return events
+        // .filter((event) =>
+        //     moment(event.created_at)
+        //         .add(event.repeat?.duration_in_weeks, 'weeks')
+        //         .isAfter(moment())
+        // )
         .filter((event) => !isWeeklyTrigger(event.scheduled_for)) // skip unwanted ones
         .map((event) => {
             const scheduled = new Date(event.scheduled_for);
@@ -82,7 +88,7 @@ export function setUpcomingEvents(
                     );
                 }
             }
-
+            console.log(event)
             return {
                 ...event,
                 upcomingDate,
