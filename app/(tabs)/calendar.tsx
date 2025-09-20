@@ -15,7 +15,7 @@ import { TouchableOpacity, View } from 'react-native';
 
 export default function CalendarScreen() {
     const { events } = useEventsStore();
-
+    // const [currentEvents, setCurrentEvents] = useState([]); 
     const [selectedDate, setSelectedDate] = useState(new Date().toDateString());
     const [selectedDateEvents, setSelectedDateEvents] = useState(
         setDateEvents(events || [], selectedDate)
@@ -34,6 +34,13 @@ export default function CalendarScreen() {
     useEffect(() => {
         setSelectedDateEvents(setDateEvents(events || [], selectedDate));
     }, [selectedDate, events]);
+
+    // useEffect(() => {
+    //     setCurrentEvents((events: any) => {
+    //         return events.filter((event: Event) => event. )
+    //     })
+    // }, [events])
+
     return (
         <ThemedView className="min-h-screen w-full px-4">
             <View className="flex flex-row items-center justify-between mt-12 pl-4">

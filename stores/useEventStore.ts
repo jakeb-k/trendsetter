@@ -7,7 +7,7 @@ interface Event {
     description: string;
     repeat?: {
         frequency: string;
-        duration_of_weeks: number;
+        duration_in_weeks: number;
     };
     scheduled_for: Date;
     completed_at: Date | null;
