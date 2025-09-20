@@ -32,7 +32,7 @@ export default function HomeScreen() {
 
     return (
         <ParallaxScrollView
-            headerBackgroundColor={{ light: '#FFF9EC ', dark: '#FFF9EC ' }}
+            headerBackgroundColor={{ light: '#000 ', dark: '#000 ' }}
             headerContent={
                 <View className="flex flex-col items-center px-4 pb-6 pt-4 h-full">
                     <Text
@@ -55,11 +55,11 @@ export default function HomeScreen() {
         >
             <View
                 style={{ borderTopEndRadius: 32, borderTopStartRadius: 32 }}
-                className="bg-[#FEF3DA] min-h-screen h-full rounded-t-xl px-4"
+                className="bg-[#0F0F0F] min-h-screen h-full rounded-t-xl px-4"
             >
                 <TodaysFocus todaysEvents={todaysEvents} />
                 <CurrentGoals goals={goals} />
-                <Text className="text-[#8B3C00] font-semibold text-lg ml-1">
+                <Text className="text-white font-semibold text-lg ml-1">
                     Upcoming Events
                 </Text>
                 {Object.entries(groupedEvents)

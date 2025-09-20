@@ -65,7 +65,6 @@ function getNextOccurrence(startDate: Date, type: 'weekly' | 'monthly'): Date {
 export function setUpcomingEvents(
     events: Event[] = []
 ): (Event & { upcomingDate: Date })[] {
-    console.log(events); 
     return events
         // .filter((event) =>
         //     moment(event.created_at)
