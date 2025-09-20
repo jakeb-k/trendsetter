@@ -87,7 +87,6 @@ export function setUpcomingEvents(
                     );
                 }
             }
-            console.log(event)
             return {
                 ...event,
                 upcomingDate,

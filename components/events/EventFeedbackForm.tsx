@@ -125,7 +125,6 @@ export default function EventFeedbackForm({
                 placeholderTextColor="#ccc"
                 style={{ maxHeight: 240 }}
                 onChangeText={(text) => setData({ ...data, note: text })}
-                onSubmitEditing={() => console.log('bababooey')}
                 className="bg-white/10 text-white px-4 py-3 backdrop-blur-xl rounded-xl mt-2 mb-4 mr-2"
             />
         </View>
