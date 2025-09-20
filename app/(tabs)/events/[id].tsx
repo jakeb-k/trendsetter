@@ -58,6 +58,8 @@ export default function EventDetailLayout() {
         getSelectedDate();
     }, []);
 
+    //console.log(eventFeedback)
+
     const requestEventFeedbackHistory = async (id: string) => {
         if (!id) return;
         return getEventFeedbackHistory(id.toString());
@@ -123,10 +125,16 @@ export default function EventDetailLayout() {
                                 closeForm={() => setIsLogging(false)}
                                 isSubmitting={isSubmitting}
                                 setNewData={(newEvent: any) => {
-                                    setEventFeedback([
-                                        ...eventFeedback,
-                                        newEvent,
-                                    ]);
+                                    setEventFeedback(
+                                        (existingEvents: EventFeedback[]) => {
+                                            const filtered =
+                                                existingEvents.filter(
+                                                    (event: EventFeedback) =>
+                                                        event.id !== newEvent.id
+                                                );
+                                            return [newEvent, ...filtered];
+                                        }
+                                    );
                                     setSuccess(true);
                                     setIsLogging(false);
                                     setIsSubmitting(false);
