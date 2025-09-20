@@ -10,7 +10,6 @@ export default function NextEvents({
     events: Event[];
     date: Date;
 }) {
-    console.log(events); 
     return (
         // should have slide actions of cancelling or completing
         <TouchableOpacity

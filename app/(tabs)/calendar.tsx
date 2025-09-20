@@ -11,11 +11,10 @@ import {
 import Entypo from '@expo/vector-icons/Entypo';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
 
 export default function CalendarScreen() {
     const { events } = useEventsStore();
-    // const [currentEvents, setCurrentEvents] = useState([]); 
     const [selectedDate, setSelectedDate] = useState(new Date().toDateString());
     const [selectedDateEvents, setSelectedDateEvents] = useState(
         setDateEvents(events || [], selectedDate)
@@ -35,21 +34,29 @@ export default function CalendarScreen() {
         setSelectedDateEvents(setDateEvents(events || [], selectedDate));
     }, [selectedDate, events]);
 
-
     return (
-        <ThemedView className="min-h-screen w-full px-4">
-            <View className="flex flex-row items-center justify-between mt-12 pl-4">
-                <TitleText className="font-bold text-3xl " title={month} />
-                <TouchableOpacity>
-                    <Entypo name="chevron-right" size={40} color="#FF6B00" />
-                </TouchableOpacity>
-            </View>
-            <CalendarView
-                eventDates={eventDates}
-                calendarBg={backgroundColor}
-                updateSelectedDate={setSelectedDate}
-            />
-            <CalendarDayInfo date={selectedDate} events={selectedDateEvents} />
-        </ThemedView>
+        <ScrollView className="flex-1 bg-secondary">
+            <ThemedView className="min-h-screen h-full w-full px-4 pb-32">
+                <View className="flex flex-row items-center justify-between mt-12 pl-4">
+                    <TitleText className="font-bold text-3xl " title={month} />
+                    <TouchableOpacity>
+                        <Entypo
+                            name="chevron-right"
+                            size={40}
+                            color="#FF6B00"
+                        />
+                    </TouchableOpacity>
+                </View>
+                <CalendarView
+                    eventDates={eventDates}
+                    calendarBg={backgroundColor}
+                    updateSelectedDate={setSelectedDate}
+                />
+                <CalendarDayInfo
+                    date={selectedDate}
+                    events={selectedDateEvents}
+                />
+            </ThemedView>
+        </ScrollView>
     );
 }
