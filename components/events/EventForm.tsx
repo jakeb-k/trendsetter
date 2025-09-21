@@ -17,6 +17,7 @@ type EventFormProps = {
     event?: Event;
     isSubmitting: boolean;
     closeForm: () => void;
+    resetSubmitting: () => void;
     setSuccess: () => void;
 };
 
@@ -24,6 +25,7 @@ export default function EventForm({
     event,
     isSubmitting,
     closeForm,
+    resetSubmitting,
     setSuccess,
 }: EventFormProps) {
     const [newEvent, setNewEvent] = useState<EventRequest>({
@@ -68,11 +70,13 @@ export default function EventForm({
                 setEvents([...events, newEventData.data as Event]);
                 setSuccess(); 
             } else {
-                console.error(newEventData.error);
+                resetSubmitting(); 
+                console.error(newEventData);
             }
         }
 
         if (isSubmitting) {
+            console.log('bang')
             handleEventRequest();
         }
     }, [isSubmitting]);

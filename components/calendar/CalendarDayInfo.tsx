@@ -79,10 +79,13 @@ export default function CalendarDayInfo({
             {isCreating && (
                 <Animated.View style={{ opacity, transform: [{ scale }] }}>
                     <EventForm
+                        resetSubmitting={() => setIsSubmitting(false)}
                         isSubmitting={isSubmitting}
                         event={editEvent}
                         setSuccess={handleSuccess}
-                        closeForm={() => setIsCreating(false)}
+                        closeForm={() =>{ 
+                            setIsSubmitting(false) 
+                            setIsCreating(false)}}
                     />
                 </Animated.View>
             )}
@@ -91,6 +94,7 @@ export default function CalendarDayInfo({
                     if (isCreating) {
                         setIsSubmitting(true);
                     } else {
+                        setIsSubmitting(false); 
                         setSuccess(false);
                         setIsCreating(!isCreating);
                     }
