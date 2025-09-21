@@ -1,6 +1,8 @@
-import { getGoals } from '@/api/eventsApi';
+import { getGoals, storeEvent } from '@/api/eventsApi';
+import { useEventsStore } from '@/stores/useEventStore';
 import Event from '@/types/models/Event';
 import Goal from '@/types/models/Goal';
+import { EventRequest } from '@/types/requests/EventsRequest';
 import { AntDesign } from '@expo/vector-icons';
 import DateTimePicker, {
     DateTimePickerEvent,
@@ -13,20 +15,28 @@ import TitleText from '../common/TitleText';
 
 type EventFormProps = {
     event?: Event;
+    isSubmitting: boolean;
     closeForm: () => void;
+    setSuccess: () => void;
 };
 
-export default function EventForm({ event, closeForm }: EventFormProps) {
-    const [newEvent, setNewEvent] = useState({
-        goal_id: null,
+export default function EventForm({
+    event,
+    isSubmitting,
+    closeForm,
+    setSuccess,
+}: EventFormProps) {
+    const [newEvent, setNewEvent] = useState<EventRequest>({
+        goal_id: undefined,
         title: '',
         description: '',
-        frequency: '',
+        frequency: 'weekly',
         times_per_week: 1,
         duration_in_weeks: 4,
         start_date: new Date(),
     });
 
+    const { setEvents, events } = useEventsStore();
     const [goals, setGoals] = useState<Goal[]>([] as Goal[]);
     const [loading, setLoading] = useState(true);
     const [mode, setMode] = useState<any>('date');
@@ -49,6 +59,23 @@ export default function EventForm({ event, closeForm }: EventFormProps) {
     const showDatepicker = () => {
         showMode('date');
     };
+
+    useEffect(() => {
+        async function handleEventRequest() {
+            console.log('sending');
+            const newEventData = await storeEvent(newEvent);
+            if (!newEventData.error) {
+                setEvents([...events, newEventData.data as Event]);
+                setSuccess(); 
+            } else {
+                console.error(newEventData.error);
+            }
+        }
+
+        if (isSubmitting) {
+            handleEventRequest();
+        }
+    }, [isSubmitting]);
 
     useEffect(() => {
         async function waitForGoals() {
@@ -104,7 +131,7 @@ export default function EventForm({ event, closeForm }: EventFormProps) {
                     </View>
                 </View>
                 <View>
-                    <Text className="text-lg font-satoshi text-white mt-2">
+                    <Text className="text-lg font-satoshi text-white">
                         Title
                     </Text>
                     <TextInput
@@ -119,7 +146,7 @@ export default function EventForm({ event, closeForm }: EventFormProps) {
                     />
                 </View>
                 <View>
-                    <Text className="text-lg font-satoshi text-white mt-2">
+                    <Text className="text-lg font-satoshi text-white">
                         Description
                     </Text>
                     <TextInput
@@ -136,7 +163,7 @@ export default function EventForm({ event, closeForm }: EventFormProps) {
                     />
                 </View>
                 <Text className="text-lg font-satoshi text-white">Repeat</Text>
-                <View className="flex flex-row items-center space-x-4">
+                <View className="flex flex-row items-center space-x-4 pb-2">
                     <View className="flex flex-row space-x-2 items-center">
                         <View
                             className={`rounded-full border p-1 ${

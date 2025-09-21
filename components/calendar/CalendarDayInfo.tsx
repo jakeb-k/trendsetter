@@ -1,4 +1,5 @@
 import Event from '@/types/models/Event';
+import { AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import moment from 'moment';
@@ -16,7 +17,9 @@ export default function CalendarDayInfo({
     date: string;
 }) {
     const [isCreating, setIsCreating] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [editEvent, setEditEvent] = useState({} as Event);
+    const [success, setSuccess] = useState(false);
     const opacity = useRef(new Animated.Value(0)).current;
     const scale = useRef(new Animated.Value(0.9)).current;
 
@@ -40,6 +43,12 @@ export default function CalendarDayInfo({
     const handleEventPress = async (eventId: number) => {
         await AsyncStorage.setItem('selectedDate', JSON.stringify(date));
         router.push({ pathname: '/events/[id]', params: { id: eventId } });
+    };
+
+    const handleSuccess = () => {
+        setIsSubmitting(false);
+        setSuccess(true);
+        setIsCreating(false);
     };
 
     return (
@@ -68,16 +77,38 @@ export default function CalendarDayInfo({
                 </>
             )}
             {isCreating && (
-                <Animated.View
-                    style={{ opacity, transform: [{ scale }] }}
-                >
-                    <EventForm event={editEvent} closeForm={() => setIsCreating(false)} />
+                <Animated.View style={{ opacity, transform: [{ scale }] }}>
+                    <EventForm
+                        isSubmitting={isSubmitting}
+                        event={editEvent}
+                        setSuccess={handleSuccess}
+                        closeForm={() => setIsCreating(false)}
+                    />
                 </Animated.View>
             )}
-            <PrimaryButton onPress={() => setIsCreating(!isCreating)} className="mt-4">
+            <PrimaryButton
+                onPress={() => {
+                    if (isCreating) {
+                        setIsSubmitting(true);
+                    } else {
+                        setSuccess(false);
+                        setIsCreating(!isCreating);
+                    }
+                }}
+                className={`mt-4 ${
+                    success
+                        ? 'bg-green-700 shadow-green-700 flex flex-row justify-center space-x-2 items-center'
+                        : ''
+                }`}
+            >
                 <Text className="text-white text-center font-satoshi text-lg font-bold">
-                    {isCreating ? 'Create Event' : 'Add Event'}
+                    {isCreating
+                        ? 'Create Event'
+                        : success
+                        ? 'Created Event'
+                        : 'Add Event'}
                 </Text>
+                {success && <AntDesign name="check" size={24} color="white" />}
             </PrimaryButton>
         </View>
     );

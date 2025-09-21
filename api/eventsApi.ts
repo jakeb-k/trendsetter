@@ -1,5 +1,5 @@
 import Config from '@/constants/Config';
-import { EventFeedbackRequest } from '@/types/requests/EventsRequest';
+import { EventFeedbackRequest, EventRequest } from '@/types/requests/EventsRequest';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import axios from 'axios';
@@ -65,6 +65,28 @@ export async function storeEventFeedback(payload: EventFeedbackRequest, eventID:
         return res.data;
     } catch (err) {
         console.error('Event Feedback History request failed:', err);
+        return { error: true, message: err || 'Unknown error' };
+    }
+}
+
+export async function storeEvent(payload: EventRequest) {
+    try {
+        const token = await AsyncStorage.getItem('token');
+        if(!token){
+            router.navigate('/login')
+        }
+        const res = await axios.post(
+            `${Config.API_URL}/events`,
+            payload,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.error('Event POST request failed:', err);
         return { error: true, message: err || 'Unknown error' };
     }
 }
