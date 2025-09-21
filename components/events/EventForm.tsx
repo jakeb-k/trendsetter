@@ -70,31 +70,53 @@ export default function EventForm(event?: Event) {
             <Text className="text-lg font-satoshi text-white">Repeat</Text>
             <View className="flex flex-row items-center space-x-4">
                 <View className="flex flex-row space-x-2 items-center">
-                    <TouchableOpacity
-                        className={`rounded-full border p-3 ${
+                    <View
+                        className={`rounded-full border p-1 ${
                             newEvent.frequency === 'weekly'
-                                ? 'bg-primary border-primary'
-                                : 'bg-transparent border-white'
+                                ? 'border-primary'
+                                : ' border-white'
                         }`}
-                        onPress={() =>
-                            setNewEvent({ ...newEvent, frequency: 'weekly' })
-                        }
-                    />
+                    >
+                        <TouchableOpacity
+                            className={`rounded-full border p-2 ${
+                                newEvent.frequency === 'weekly'
+                                    ? 'bg-primary border-primary'
+                                    : 'bg-transparent'
+                            }`}
+                            onPress={() =>
+                                setNewEvent({
+                                    ...newEvent,
+                                    frequency: 'weekly',
+                                })
+                            }
+                        />
+                    </View>
                     <Text className="text-lg font-satoshi text-white">
                         Weekly
                     </Text>
                 </View>
                 <View className="flex flex-row space-x-2 items-center">
-                    <TouchableOpacity
-                        className={`rounded-full border p-3 ${
+                    <View
+                        className={`rounded-full border p-1 ${
                             newEvent.frequency === 'monthly'
-                                ? 'bg-primary border-primary'
-                                : 'bg-transparent border-white'
+                                ? 'border-primary'
+                                : ' border-white'
                         }`}
-                        onPress={() =>
-                            setNewEvent({ ...newEvent, frequency: 'monthly' })
-                        }
-                    />
+                    >
+                        <TouchableOpacity
+                            className={`rounded-full border p-2 ${
+                                newEvent.frequency === 'monthly'
+                                    ? 'bg-primary border-primary'
+                                    : 'bg-transparent'
+                            }`}
+                            onPress={() =>
+                                setNewEvent({
+                                    ...newEvent,
+                                    frequency: 'monthly',
+                                })
+                            }
+                        />
+                    </View>
                     <Text className="text-lg font-satoshi text-white">
                         Monthly
                     </Text>
