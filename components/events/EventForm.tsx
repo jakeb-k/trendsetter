@@ -1,4 +1,7 @@
 import Event from '@/types/models/Event';
+import DateTimePicker, {
+    DateTimePickerEvent,
+} from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -14,26 +17,53 @@ export default function EventForm(event?: Event) {
         duration_in_weeks: 0,
         start_date: new Date(),
     });
+    const [mode, setMode] = useState<any>('date');
+    const [show, setShow] = useState(false);
+
+    const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
+        const currentDate = selectedDate;
+        setShow(false);
+        setNewEvent((prev) => ({
+            ...prev,
+            start_date: currentDate ? currentDate : new Date(),
+        }));
+    };
+
+    const showMode = (currentMode: any) => {
+        setShow(true);
+        setMode(currentMode);
+    };
+
+    const showDatepicker = () => {
+        showMode('date');
+    };
 
     return (
-        <View className="my-4 border-2 border-primary shadow-lg shadow-primary rounded-lg p-2 relative space-y-2">
+        <View className="my-4 border-2 border-primary shadow-lg shadow-primary rounded-lg p-2 px-4 relative space-y-2">
             <TitleText title="New Event" />
             <View>
                 <Text className="text-lg font-satoshi text-white mt-2">
                     Goal
                 </Text>
-                <Picker
-                    selectedValue={newEvent.goal_id}
-                    onValueChange={(itemValue) =>
-                        setNewEvent((prev) => ({ ...prev, goal_id: itemValue }))
-                    }
-                >
-                    <Picker.Item label="Become Better At Golf" value="1" />
-                    <Picker.Item
-                        label="Become Better At Programming"
-                        value="2"
-                    />
-                </Picker>
+                <View className="bg-white/10 px-4 py-3 backdrop-blur-xl rounded-xl mt-2 mb-4 mr-2 text-primary font-bold">
+                    <Picker
+                        selectedValue={newEvent.goal_id}
+                        onValueChange={(itemValue) =>
+                            setNewEvent((prev) => ({
+                                ...prev,
+                                goal_id: itemValue,
+                            }))
+                        }
+                        dropdownIconColor="white" // for Android
+                        style={{ backgroundColor: 'transparent', color: '' }}
+                    >
+                        <Picker.Item label="Become Better At Golf" value="1" />
+                        <Picker.Item
+                            label="Become Better At Programming"
+                            value="2"
+                        />
+                    </Picker>
+                </View>
             </View>
             <View>
                 <Text className="text-lg font-satoshi text-white mt-2">
@@ -134,7 +164,10 @@ export default function EventForm(event?: Event) {
                         placeholder=""
                         placeholderTextColor="#ccc"
                         onChangeText={(text) =>
-                            setNewEvent({ ...newEvent, times_per_week: Number(text) })
+                            setNewEvent({
+                                ...newEvent,
+                                times_per_week: Number(text),
+                            })
                         }
                         className="bg-white/10 text-white px-4 py-3 backdrop-blur-xl rounded-xl mt-2 mb-4 mr-2"
                     />
@@ -150,11 +183,36 @@ export default function EventForm(event?: Event) {
                         placeholder="Add any notes..."
                         placeholderTextColor="#ccc"
                         onChangeText={(text) =>
-                            setNewEvent({ ...newEvent, duration_in_weeks: Number(text) })
+                            setNewEvent({
+                                ...newEvent,
+                                duration_in_weeks: Number(text),
+                            })
                         }
                         className="bg-white/10 text-white px-4 py-3 backdrop-blur-xl rounded-xl mt-2 mb-4 mr-2"
                     />
                 </View>
+            </View>
+            <View>
+                <Text className="text-lg font-satoshi text-white">
+                    Start Date
+                </Text>
+                <TouchableOpacity
+                    onPress={showDatepicker}
+                    className="bg-white/10 text-white px-4 py-3 backdrop-blur-xl rounded-xl mt-2 mb-4 mr-2"
+                >
+                    <Text className="text-lg font-satoshi text-white">
+                        Select Date
+                    </Text>
+                </TouchableOpacity>
+                {show && (
+                    <DateTimePicker
+                        testID="dateTimePicker"
+                        value={newEvent.start_date}
+                        mode={mode}
+                        is24Hour={true}
+                        onChange={onChange}
+                    />
+                )}
             </View>
         </View>
     );
