@@ -16,7 +16,7 @@ export default function CalendarDayInfo({
     date: string;
 }) {
     const [isCreating, setIsCreating] = useState(false);
-    const [editEvent, setEditEvent] = useState({} as Event)
+    const [editEvent, setEditEvent] = useState({} as Event);
     const opacity = useRef(new Animated.Value(0)).current;
     const scale = useRef(new Animated.Value(0.9)).current;
 
@@ -67,8 +67,14 @@ export default function CalendarDayInfo({
                     </Text>
                 </>
             )}
-            <EventForm event={editEvent}  />
-            <PrimaryButton className="mt-4">
+            {isCreating && (
+                <Animated.View
+                    style={{ opacity, transform: [{ scale }] }}
+                >
+                    <EventForm event={editEvent} closeForm={() => setIsCreating(false)} />
+                </Animated.View>
+            )}
+            <PrimaryButton onPress={() => setIsCreating(!isCreating)} className="mt-4">
                 <Text className="text-white text-center font-satoshi text-lg font-bold">
                     {isCreating ? 'Create Event' : 'Add Event'}
                 </Text>
