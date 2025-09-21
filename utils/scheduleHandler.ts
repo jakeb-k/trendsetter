@@ -10,11 +10,13 @@ export function isWeeklyTriggerFromSelectedDate(
     startDate: Date,
     selectedDate: Date
 ) {
+    // console.log('break here isWeeklyTriggerFromSelectedDate')
     const diffInDays = moment(selectedDate).diff(moment(startDate), 'days');
     return diffInDays % 7 === 0;
 }
 
 export function setDateEvents(events: Event[] = [], date?: string): Event[] {
+    // console.log('break here setDateEvents')
     if (date)
         return events.filter((event) =>
             isWeeklyTriggerFromSelectedDate(event.scheduled_for, new Date(date))
@@ -65,7 +67,6 @@ function getNextOccurrence(startDate: Date, type: 'weekly' | 'monthly'): Date {
 export function setUpcomingEvents(
     events: Event[] = []
 ): (Event & { upcomingDate: Date })[] {
-    console.log(events); 
     return events
         // .filter((event) =>
         //     moment(event.created_at)
@@ -88,7 +89,6 @@ export function setUpcomingEvents(
                     );
                 }
             }
-            console.log(event)
             return {
                 ...event,
                 upcomingDate,
