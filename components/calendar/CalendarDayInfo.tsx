@@ -43,7 +43,7 @@ export default function CalendarDayInfo({
     };
 
     return (
-        <View className="pl-4 mt-8">
+        <View className="px-2 mt-8">
             <TitleText
                 className="mb-2"
                 title={moment(date).format('ddd Do MMM')}
@@ -67,7 +67,6 @@ export default function CalendarDayInfo({
                     </Text>
                 </>
             )}
-
             <EventForm event={editEvent}  />
             <PrimaryButton className="mt-4">
                 <Text className="text-white text-center font-satoshi text-lg font-bold">

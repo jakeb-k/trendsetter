@@ -16,7 +16,7 @@ export default function EventForm(event?: Event) {
     });
 
     return (
-        <View className="pl-4 my-4 border-2 border-primary shadow-lg shadow-primary rounded-lg p-2 relative space-y-3">
+        <View className="my-4 border-2 border-primary shadow-lg shadow-primary rounded-lg p-2 relative space-y-2">
             <TitleText title="New Event" />
             <View>
                 <Text className="text-lg font-satoshi text-white mt-2">
@@ -120,6 +120,40 @@ export default function EventForm(event?: Event) {
                     <Text className="text-lg font-satoshi text-white">
                         Monthly
                     </Text>
+                </View>
+            </View>
+            <View className="flex flex-row justify-between space-x-2">
+                <View className="w-[47.5%]">
+                    <Text className="text-lg font-satoshi text-white mt-3">
+                        Times Per Week
+                    </Text>
+                    <TextInput
+                        keyboardType="numeric"
+                        value={newEvent.times_per_week.toString()}
+                        textAlignVertical="top"
+                        placeholder=""
+                        placeholderTextColor="#ccc"
+                        onChangeText={(text) =>
+                            setNewEvent({ ...newEvent, times_per_week: Number(text) })
+                        }
+                        className="bg-white/10 text-white px-4 py-3 backdrop-blur-xl rounded-xl mt-2 mb-4 mr-2"
+                    />
+                </View>
+                <View className="w-[47.5%]">
+                    <Text className="text-lg font-satoshi text-white mt-3">
+                        Duration (weeks)
+                    </Text>
+                    <TextInput
+                        keyboardType="numeric"
+                        value={newEvent.duration_in_weeks.toString()}
+                        textAlignVertical="top"
+                        placeholder="Add any notes..."
+                        placeholderTextColor="#ccc"
+                        onChangeText={(text) =>
+                            setNewEvent({ ...newEvent, duration_in_weeks: Number(text) })
+                        }
+                        className="bg-white/10 text-white px-4 py-3 backdrop-blur-xl rounded-xl mt-2 mb-4 mr-2"
+                    />
                 </View>
             </View>
         </View>
