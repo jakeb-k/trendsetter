@@ -4,6 +4,7 @@ import TitleText from '@/components/common/TitleText';
 import { ThemedView } from '@/components/ThemedView';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useEventsStore } from '@/stores/useEventStore';
+import Event from '@/types/models/Event';
 import {
     createDateArrayForCurrentMonth,
     setDateEvents,
@@ -26,14 +27,24 @@ export default function CalendarScreen() {
         'background'
     );
 
-    const [eventDates, setEventDates] = useState<string[]>(
-        createDateArrayForCurrentMonth(month, events || [])
-    );
+    // const [eventDates, setEventDates] = useState<string[]>(
+    //     createDateArrayForCurrentMonth(
+    //         month,
+    //         events.filter((event: Event) => event.repeat !== null) || []
+    //     )
+    // );
 
     useEffect(() => {
-        console.log('detected the new event')
-        createDateArrayForCurrentMonth(month, events || [])
-        setSelectedDateEvents(setDateEvents(events || [], selectedDate));
+        createDateArrayForCurrentMonth(
+            month,
+            events.filter((event: Event) => event.repeat !== null) || []
+        );
+        setSelectedDateEvents(
+            setDateEvents(
+                events.filter((event: Event) => event.repeat !== null) || [],
+                selectedDate
+            )
+        );
     }, [selectedDate, events]);
 
     return (
@@ -50,7 +61,12 @@ export default function CalendarScreen() {
                     </TouchableOpacity>
                 </View>
                 <CalendarView
-                    eventDates={eventDates}
+                    eventDates={createDateArrayForCurrentMonth(
+                        month,
+                        events.filter(
+                            (event: Event) => event.repeat !== null
+                        ) || []
+                    )}
                     calendarBg={backgroundColor}
                     updateSelectedDate={setSelectedDate}
                 />

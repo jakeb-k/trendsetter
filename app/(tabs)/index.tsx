@@ -59,9 +59,11 @@ export default function HomeScreen() {
             >
                 <TodaysFocus todaysEvents={todaysEvents} />
                 <CurrentGoals goals={goals} />
-                <Text className="text-white font-semibold text-lg ml-1">
-                    Upcoming Events
-                </Text>
+                {Object.keys(groupedEvents).length > 0 && (
+                    <Text className="text-white font-semibold text-lg ml-1">
+                        Upcoming Events
+                    </Text>
+                )}
                 {Object.entries(groupedEvents)
                     .sort(
                         ([a], [b]) =>

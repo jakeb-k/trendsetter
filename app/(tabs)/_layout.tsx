@@ -79,15 +79,15 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
-                name="explore"
+                name="ai-chat"
                 options={{
-                    title: 'Progress',
+                    title: 'Forge',
                     tabBarIcon: () => {
-                        const active = activeRoute === 'explore';
+                        const active = activeRoute === 'ai-chat';
                         return (
                             <AnimatedTabWrap active={active}>
                                 <Entypo
-                                    name="bar-graph"
+                                    name="chat"
                                     size={24}
                                     color={active ? '#000' : '#8B3C00'}
                                 />

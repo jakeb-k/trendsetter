@@ -90,6 +90,6 @@ export async function storeEvent(payload: EventRequest) {
         return res.data;
     } catch (err) {
         console.error('Event POST request failed:', err);
-        return { error: true, message: err || 'Unknown error' };
+        throw err; 
     }
 }
