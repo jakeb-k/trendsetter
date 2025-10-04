@@ -31,7 +31,6 @@ export default function CalendarScreen() {
     );
 
     useEffect(() => {
-        console.log('detected the new event')
         createDateArrayForCurrentMonth(month, events || [])
         setSelectedDateEvents(setDateEvents(events || [], selectedDate));
     }, [selectedDate, events]);

@@ -64,19 +64,19 @@ export default function EventForm({
 
     useEffect(() => {
         async function handleEventRequest() {
-            console.log('sending');
-            const newEventData = await storeEvent(newEvent);
-            if (!newEventData.error) {
-                setEvents([...events, newEventData.data as Event]);
-                setSuccess(); 
-            } else {
-                resetSubmitting(); 
-                console.error(newEventData);
-            }
+            storeEvent(newEvent)
+                .then((response) => {
+                    setEvents([...events, response as Event]);
+                    setSuccess();
+                })
+                .catch((error) => {
+                    resetSubmitting();
+                    console.error(error);
+                })
+                .finally(() => {});
         }
 
         if (isSubmitting) {
-            console.log('bang')
             handleEventRequest();
         }
     }, [isSubmitting]);
@@ -224,7 +224,7 @@ export default function EventForm({
                 <View className="flex flex-row justify-between space-x-2">
                     <View className="w-[47.5%]">
                         <Text className="text-lg font-satoshi text-white mt-3">
-                            Times Per Week
+                            Frequency
                         </Text>
                         <TextInput
                             keyboardType="numeric"

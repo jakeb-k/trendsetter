@@ -10,13 +10,11 @@ export function isWeeklyTriggerFromSelectedDate(
     startDate: Date,
     selectedDate: Date
 ) {
-    // console.log('break here isWeeklyTriggerFromSelectedDate')
     const diffInDays = moment(selectedDate).diff(moment(startDate), 'days');
     return diffInDays % 7 === 0;
 }
 
 export function setDateEvents(events: Event[] = [], date?: string): Event[] {
-    // console.log('break here setDateEvents')
     if (date)
         return events.filter((event) =>
             isWeeklyTriggerFromSelectedDate(event.scheduled_for, new Date(date))
@@ -68,6 +66,7 @@ export function setUpcomingEvents(
     events: Event[] = []
 ): (Event & { upcomingDate: Date })[] {
     return events
+        // keeping this commented because I want to see previous events ive made. 
         // .filter((event) =>
         //     moment(event.created_at)
         //         .add(event.repeat?.duration_in_weeks, 'weeks')
