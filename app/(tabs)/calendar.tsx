@@ -4,6 +4,7 @@ import TitleText from '@/components/common/TitleText';
 import { ThemedView } from '@/components/ThemedView';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useEventsStore } from '@/stores/useEventStore';
+import Event from '@/types/models/Event';
 import {
     createDateArrayForCurrentMonth,
     setDateEvents,
@@ -27,12 +28,23 @@ export default function CalendarScreen() {
     );
 
     const [eventDates, setEventDates] = useState<string[]>(
-        createDateArrayForCurrentMonth(month, events || [])
+        createDateArrayForCurrentMonth(
+            month,
+            events.filter((event: Event) => event.repeat !== null) || []
+        )
     );
 
     useEffect(() => {
-        createDateArrayForCurrentMonth(month, events || [])
-        setSelectedDateEvents(setDateEvents(events || [], selectedDate));
+        createDateArrayForCurrentMonth(
+            month,
+            events.filter((event: Event) => event.repeat !== null) || []
+        );
+        setSelectedDateEvents(
+            setDateEvents(
+                events.filter((event: Event) => event.repeat !== null) || [],
+                selectedDate
+            )
+        );
     }, [selectedDate, events]);
 
     return (

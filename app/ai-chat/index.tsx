@@ -85,7 +85,7 @@ Every step is built to push you forward. Check your calendar, lock in your focus
                             'ai_plan',
                             JSON.stringify(response.ai_plan)
                         );
-                        setGoals([...goals, response.goals]);
+                        setGoals([...goals, response.goal]);
                         setFinished(true);
                     } catch (error) {
                         console.error('AsyncStorage write failed:', error);
