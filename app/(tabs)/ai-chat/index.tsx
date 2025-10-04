@@ -120,7 +120,7 @@ Every step is built to push you forward. Check your calendar, lock in your focus
                     </PrimaryButton>
                 )}
             </ScrollView>
-            <View className="absolute bottom-0 pt-6 rounded-t-lg w-full backdrop-blur-xl">
+            <View className="absolute bottom-16 pt-6 rounded-t-lg w-full backdrop-blur-xl">
                 <TextInput
                     multiline={true}
                     value={newMessage}
