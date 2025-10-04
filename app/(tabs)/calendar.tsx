@@ -27,12 +27,12 @@ export default function CalendarScreen() {
         'background'
     );
 
-    const [eventDates, setEventDates] = useState<string[]>(
-        createDateArrayForCurrentMonth(
-            month,
-            events.filter((event: Event) => event.repeat !== null) || []
-        )
-    );
+    // const [eventDates, setEventDates] = useState<string[]>(
+    //     createDateArrayForCurrentMonth(
+    //         month,
+    //         events.filter((event: Event) => event.repeat !== null) || []
+    //     )
+    // );
 
     useEffect(() => {
         createDateArrayForCurrentMonth(
@@ -61,7 +61,12 @@ export default function CalendarScreen() {
                     </TouchableOpacity>
                 </View>
                 <CalendarView
-                    eventDates={eventDates}
+                    eventDates={createDateArrayForCurrentMonth(
+                        month,
+                        events.filter(
+                            (event: Event) => event.repeat !== null
+                        ) || []
+                    )}
                     calendarBg={backgroundColor}
                     updateSelectedDate={setSelectedDate}
                 />

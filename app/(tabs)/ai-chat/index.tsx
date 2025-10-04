@@ -106,7 +106,7 @@ Every step is built to push you forward. Check your calendar, lock in your focus
 
     return (
         <ThemedView className=" pt-6 px-4 h-full relative">
-            <ScrollView className="space-y-4 pb-32">
+            <ScrollView className="space-y-4 pb-44">
                 {messages.map((message, index) => (
                     <MessageBubble key={index} message={message} />
                 ))}
