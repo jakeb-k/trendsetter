@@ -8,7 +8,7 @@ export default function TitleText({
     title: string;
     className?: string;
 }) {
-    const textColor = useThemeColor({ light: 'black', dark: 'white' }, 'text'); // correct logic
+    const textColor = useThemeColor({ light: 'black', dark: 'white' }, 'text');
     const colourClass = textColor === 'white' ? 'text-white' : 'text-black';
 
     return (

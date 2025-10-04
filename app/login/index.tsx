@@ -4,74 +4,111 @@ import { useEventsStore } from '@/stores/useEventStore';
 import { useGoalsStore } from '@/stores/useGoalStore';
 import Goal from '@/types/models/Goal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ImageBackground } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Text, TextInput, View } from 'react-native';
+import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 export default function LoginScreen() {
     const [loginDetails, setLoginDetails] = useState({
         email: '',
         password: '',
     });
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<any | null>(null);
     const handleOnChange = (key: string, value: string) => {
         setLoginDetails((prev) => ({
             ...prev,
             [key]: value,
         }));
     };
-    const { setEvents } = useEventsStore(); 
-    const { setGoals } = useGoalsStore(); 
+    const [loading, setLoading] = useState(false);
+
+    const { setEvents } = useEventsStore();
+    const { setGoals } = useGoalsStore();
 
     const handleLogin = async () => {
-        try {
-            const response = await sendLoginRequest(loginDetails);
-
-            if (!response.error) {
-                const events = response.goals.flatMap((goal: Goal) => goal.events);
-                setEvents(events);
-                setGoals(response.goals)
-                await AsyncStorage.setItem('token', response.token);
-                await AsyncStorage.setItem('user', JSON.stringify(response.user));
-                router.replace('/'); // go to index page, replacing login
-            } else {
-                setError('There was an error logging in. Please try again later.');
-            }
-        } catch (err) {
-            console.error('Login error:', err);
-            setError('Unexpected error. Please try again later.');
+        if (
+            loginDetails.email === '' ||
+            !/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/.test(loginDetails.email)
+        ) {
+            setError({
+                message: 'That email looks a bit funny, try again.',
+            });
+            return;
+        } else if (loginDetails.password === '') {
+            setError({
+                message: 'Probably need to enter a password',
+            });
+            return;
         }
+        sendLoginRequest(loginDetails)
+            .then(async (response) => {
+                const events = response.goals.flatMap(
+                    (goal: Goal) => goal.events
+                );
+                setEvents(events);
+                setGoals(response.goals);
+                await AsyncStorage.setItem('token', response.token);
+                await AsyncStorage.setItem(
+                    'user',
+                    JSON.stringify(response.user)
+                );
+                router.replace('/');
+            })
+            .catch((error) => {
+                console.error(error);
+                setError({
+                    ...error.response.data,
+                    message: 'I think you need to create an account...',
+                });
+            });
     };
 
     return (
-        <ImageBackground
-            className="flex-1 justify-center items-center min-h-screen min-w-screen"
-            source={require('@/assets/images/orange_rectangle_bg.png')}
-        >
-            <View className="rounded-lg bg-white/70 p-8 my-auto m-auto min-h-1/2 mt-32 w-5/6">
-                <Text className="text-black text-2xl mb-6 text-center">Welcome!</Text>
+        <View className="absolute top-1/2 -translate-y-56 left-1/2 -translate-x-1/2 w-5/6">
+            <Text className="text-white font-satoshi font-bold text-2xl text-center mb-2">
+                Welcome Back
+            </Text>
+            <Text className="text-white/80 text-lg font-satoshi text-center mb-6">
+                Time to level up. Let's get it!
+            </Text>
+            <TextInput
+                placeholder="Email"
+                placeholderTextColor="#ccc"
+                onChange={(e) => handleOnChange('email', e.nativeEvent.text)}
+                className="bg-white/10 text-white px-4 py-3 backdrop-blur-xl border-2 border-primary rounded-xl mb-6"
+                keyboardType="email-address"
+                autoCapitalize="none"
+            />
 
-                <TextInput
-                    placeholder="Email"
-                    placeholderTextColor="#ccc"
-                    onChange={(e) => handleOnChange('email', e.nativeEvent.text)}
-                    className="bg-white/90 text-black px-4 py-3 rounded-xl mb-4"
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                />
+            <TextInput
+                placeholder="Password"
+                placeholderTextColor="#ccc"
+                onChange={(e) => handleOnChange('password', e.nativeEvent.text)}
+                className="bg-white/10 text-white px-4 py-3 backdrop-blur-xl border-2 border-primary rounded-xl mb-6"
+                secureTextEntry
+            />
 
-                <TextInput
-                    placeholder="Password"
-                    placeholderTextColor="#ccc"
-                    onChange={(e) => handleOnChange('password', e.nativeEvent.text)}
-                    className="bg-white/90 text-black px-4 py-3 rounded-xl mb-4"
-                    secureTextEntry
-                />
-
-                <PrimaryButton onPress={handleLogin}>
-                    <Text className="text-white text-lg text-center">Login</Text>
-                </PrimaryButton>
+            <PrimaryButton onPress={handleLogin}>
+                <Text className="text-white text-center font-satoshi text-lg font-bold">
+                    Login
+                </Text>
+            </PrimaryButton>
+            {error && (
+                <View className="rounded-xl backdrop-blur-xl bg-red-200/20 mt-4 p-4">
+                    <Text className="text-red-600 text-center font-satoshi text-lg font-bold">
+                        {error.message}
+                    </Text>
+                </View>
+            )}
+            <View className="flex flex-row items-center justify-center mt-12 space-x-4">
+                <Text className="text-white/80 text-lg font-satoshi text-center">
+                    Don't have an account?
+                </Text>
+                <TouchableOpacity onPress={() => router.replace('/')}>
+                    <Text className="text-primary text-lg font-satoshi">
+                        Sign Up
+                    </Text>
+                </TouchableOpacity>
             </View>
-        </ImageBackground>
+        </View>
     );
 }

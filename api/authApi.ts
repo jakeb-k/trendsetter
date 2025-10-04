@@ -8,7 +8,7 @@ export async function sendLoginRequest(payload: LoginRequest) {
     return res.data;
   } catch (err) {
     console.error('Login request failed:', err);
-    return {error: true, message:err}
+    throw err
   }
 }
 
