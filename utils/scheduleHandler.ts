@@ -1,6 +1,9 @@
 import Event from '@/types/models/Event';
 import moment from 'moment';
 
+
+type DateEvent = { date: string, eventID: number };
+
 export function isWeeklyTrigger(startDate: Date) {
     const diffInDays = moment().diff(moment(startDate), 'days');
     return diffInDays % 7 === 0;
@@ -65,34 +68,36 @@ function getNextOccurrence(startDate: Date, type: 'weekly' | 'monthly'): Date {
 export function setUpcomingEvents(
     events: Event[] = []
 ): (Event & { upcomingDate: Date })[] {
-    return events
-        // keeping this commented because I want to see previous events ive made. 
-        // .filter((event) =>
-        //     moment(event.created_at)
-        //         .add(event.repeat?.duration_in_weeks, 'weeks')
-        //         .isAfter(moment())
-        // )
-        .filter((event) => !isWeeklyTrigger(event.scheduled_for)) // skip unwanted ones
-        .map((event) => {
-            const scheduled = new Date(event.scheduled_for);
-            let upcomingDate = scheduled;
+    return (
+        events
+            // keeping this commented because I want to see previous events ive made.
+            // .filter((event) =>
+            //     moment(event.created_at)
+            //         .add(event.repeat?.duration_in_weeks, 'weeks')
+            //         .isAfter(moment())
+            // )
+            .filter((event) => !isWeeklyTrigger(event.scheduled_for)) // skip unwanted ones
+            .map((event) => {
+                const scheduled = new Date(event.scheduled_for);
+                let upcomingDate = scheduled;
 
-            if (event.repeat) {
-                if (
-                    event.repeat.frequency === 'weekly' ||
-                    event.repeat.frequency === 'monthly'
-                ) {
-                    upcomingDate = getNextOccurrence(
-                        scheduled,
-                        event.repeat.frequency
-                    );
+                if (event.repeat) {
+                    if (
+                        event.repeat.frequency === 'weekly' ||
+                        event.repeat.frequency === 'monthly'
+                    ) {
+                        upcomingDate = getNextOccurrence(
+                            scheduled,
+                            event.repeat.frequency
+                        );
+                    }
                 }
-            }
-            return {
-                ...event,
-                upcomingDate,
-            };
-        });
+                return {
+                    ...event,
+                    upcomingDate,
+                };
+            })
+    );
 }
 
 export function calculateCompletionPercentage(startDate: Date, endDate: Date) {
@@ -103,4 +108,49 @@ export function calculateCompletionPercentage(startDate: Date, endDate: Date) {
 
     // Clamp between 0 and 100 to avoid weird edge cases
     return Math.min(100, Math.max(0, progress));
+}
+
+export function calculateEventsForCurrentMonth(events: Event[]): DateEvent[] {
+    let dateEvents: DateEvent[]  = [];
+
+    events.forEach((event) => {
+        const { repeat } = event;
+        if (!repeat) return;
+
+        switch (repeat.frequency) {
+            case 'daily':
+                dateEvents.push(...generateDailyEventObjects(event));
+                break;
+            // case 'weekly':
+            //     generateDailyEventObjects(event);
+            //     break;
+            // case 'bi-monthly':
+            //     generateDailyEventObjects(event);
+            //     break;
+            // case 'monthly':
+            //     generateDailyEventObjects(event);
+            //     break;
+
+            default:
+                break;
+        }
+    });
+
+    return dateEvents; 
+}
+
+function generateDailyEventObjects(event: Event): DateEvent[] {
+    //need to calculate duration in weeks vs current date
+    let current = moment(event.created_at);
+    const endOfMonth = moment().endOf('month');
+    const endOfEvent = moment(event.created_at).add(event.repeat?.duration_in_weeks, 'weeks');
+    let dateObjects: DateEvent[] = [];
+    while (current.isSameOrBefore(endOfMonth, 'day') && current.isBefore(endOfEvent)) {
+        dateObjects.push({
+            date: current.format('YYYY-MM-DD'),
+            eventID: event.id,
+        });
+        current.add(1, 'day');
+    }
+    return dateObjects; 
 }
