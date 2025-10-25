@@ -1,8 +1,7 @@
 import Event from '@/types/models/Event';
 import moment from 'moment';
 
-
-type DateEvent = { date: string, eventID: number };
+type DateEvent = { date: string; eventID: number };
 
 export function isWeeklyTrigger(startDate: Date) {
     const diffInDays = moment().diff(moment(startDate), 'days');
@@ -111,19 +110,39 @@ export function calculateCompletionPercentage(startDate: Date, endDate: Date) {
 }
 
 export function calculateEventsForCurrentMonth(events: Event[]): DateEvent[] {
-    let dateEvents: DateEvent[]  = [];
+    let dateEvents: DateEvent[] = [];
+    const endOfMonth = moment().endOf('month');
+    const startOfMonth = moment().startOf('month');
 
     events.forEach((event) => {
         const { repeat } = event;
-        if (!repeat) return;
+        if (!repeat) {
+            if (
+                moment(event.scheduled_for).isBefore(endOfMonth) &&
+                moment(event.scheduled_for).isAfter(startOfMonth)
+            ) {
+                dateEvents.push({
+                    date: moment(event.scheduled_for).format('YYYY-MM-DD'),
+                    eventID: event.id,
+                });
+            }
+            return dateEvents;
+        } else {
+            const endOfEvent = moment(event.created_at).add(
+                event.repeat?.duration_in_weeks,
+                'weeks'
+            );
+
+            if (startOfMonth.isAfter(endOfEvent)) return;
+        }
 
         switch (repeat.frequency) {
             case 'daily':
                 dateEvents.push(...generateDailyEventObjects(event));
                 break;
-            // case 'weekly':
-            //     generateDailyEventObjects(event);
-            //     break;
+            case 'weekly':
+                dateEvents.push(...generateWeeklyEventObjects(event));
+                break;
             // case 'bi-monthly':
             //     generateDailyEventObjects(event);
             //     break;
@@ -136,21 +155,62 @@ export function calculateEventsForCurrentMonth(events: Event[]): DateEvent[] {
         }
     });
 
-    return dateEvents; 
+    return dateEvents;
 }
 
 function generateDailyEventObjects(event: Event): DateEvent[] {
-    //need to calculate duration in weeks vs current date
     let current = moment(event.created_at);
     const endOfMonth = moment().endOf('month');
-    const endOfEvent = moment(event.created_at).add(event.repeat?.duration_in_weeks, 'weeks');
+    const endOfEvent = moment(event.created_at).add(
+        event.repeat?.duration_in_weeks,
+        'weeks'
+    );
     let dateObjects: DateEvent[] = [];
-    while (current.isSameOrBefore(endOfMonth, 'day') && current.isBefore(endOfEvent)) {
+    while (
+        current.isSameOrBefore(endOfMonth, 'day') &&
+        current.isBefore(endOfEvent)
+    ) {
         dateObjects.push({
             date: current.format('YYYY-MM-DD'),
             eventID: event.id,
         });
         current.add(1, 'day');
     }
-    return dateObjects; 
+    return dateObjects;
 }
+
+function generateWeeklyEventObjects(event: Event): DateEvent[] {
+    let dateObjects: DateEvent[] = [];
+    const { repeat } = event;
+
+    let current = moment(event.created_at);
+    const endOfMonth = moment().endOf('month');
+    const endOfEvent = moment(event.created_at).add(
+        event.repeat?.duration_in_weeks,
+        'weeks'
+    );
+
+    while (
+        current.isSameOrBefore(endOfMonth, 'day') &&
+        current.isBefore(endOfEvent)
+    ) {
+        if (repeat?.times_per_week && repeat?.times_per_week! > 1) {
+            let startOfWeek = current.clone().startOf('isoWeek');
+            let increment = Math.floor(7 / (repeat?.times_per_week ?? 1));
+            let count = 0;
+            while(count !== repeat.times_per_week){
+                const newDate = startOfWeek.clone().add(increment, 'days');
+                dateObjects.push({date: newDate.format('YYYY-MM-DD'), eventID: event.id})
+                count++;
+            }
+        } else {
+            dateObjects.push({
+                date: current.format('YYYY-MM-DD'),
+                eventID: event.id,
+            });
+        }
+        current.add(1, 'week');
+    }
+    return dateObjects;
+}
+// {"frequency":"weekly","times_per_week":1,"duration_in_weeks":48}

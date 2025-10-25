@@ -6,6 +6,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { useEventsStore } from '@/stores/useEventStore';
 import Event from '@/types/models/Event';
 import {
+    calculateEventsForCurrentMonth,
     createDateArrayForCurrentMonth,
     setDateEvents,
 } from '@/utils/scheduleHandler';
@@ -45,6 +46,8 @@ export default function CalendarScreen() {
                 selectedDate
             )
         );
+        console.log(calculateEventsForCurrentMonth(events))
+
     }, [selectedDate, events]);
 
     return (

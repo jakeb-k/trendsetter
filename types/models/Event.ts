@@ -4,6 +4,7 @@ export default interface Event {
     description: string;
     repeat?: {
         frequency: string;
+        times_per_week?: number, 
         duration_in_weeks: number;
     };
     scheduled_for: Date;
