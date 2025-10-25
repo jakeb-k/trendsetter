@@ -146,9 +146,9 @@ export function calculateEventsForCurrentMonth(events: Event[]): DateEvent[] {
             // case 'bi-monthly':
             //     generateDailyEventObjects(event);
             //     break;
-            // case 'monthly':
-            //     generateDailyEventObjects(event);
-            //     break;
+            case 'monthly':
+                dateEvents.push(generateMonthlyEventObjects(event));
+                break;
 
             default:
                 break;
@@ -198,9 +198,12 @@ function generateWeeklyEventObjects(event: Event): DateEvent[] {
             let startOfWeek = current.clone().startOf('isoWeek');
             let increment = Math.floor(7 / (repeat?.times_per_week ?? 1));
             let count = 0;
-            while(count !== repeat.times_per_week){
+            while (count !== repeat.times_per_week) {
                 const newDate = startOfWeek.clone().add(increment, 'days');
-                dateObjects.push({date: newDate.format('YYYY-MM-DD'), eventID: event.id})
+                dateObjects.push({
+                    date: newDate.format('YYYY-MM-DD'),
+                    eventID: event.id,
+                });
                 count++;
             }
         } else {
@@ -213,4 +216,13 @@ function generateWeeklyEventObjects(event: Event): DateEvent[] {
     }
     return dateObjects;
 }
-// {"frequency":"weekly","times_per_week":1,"duration_in_weeks":48}
+
+function generateMonthlyEventObjects(event: Event) {
+    const currentMonthValue = moment().month() + 1;
+    const dateValue = moment(event.created_at).format('YYYY-MM-DD');
+    const [year, , day] = dateValue.split('-');
+    return {
+        date: `${year}-${String(currentMonthValue).padStart(2, '0')}-${day}`,
+        eventID: event.id,
+    };
+}
