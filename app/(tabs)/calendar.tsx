@@ -4,10 +4,8 @@ import TitleText from '@/components/common/TitleText';
 import { ThemedView } from '@/components/ThemedView';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useEventsStore } from '@/stores/useEventStore';
-import Event from '@/types/models/Event';
 import {
-    createDateArrayForCurrentMonth,
-    setDateEvents,
+    calculateEventsForCurrentMonth,
 } from '@/utils/scheduleHandler';
 import Entypo from '@expo/vector-icons/Entypo';
 import moment from 'moment';
@@ -18,7 +16,13 @@ export default function CalendarScreen() {
     const { events } = useEventsStore();
     const [selectedDate, setSelectedDate] = useState(new Date().toDateString());
     const [selectedDateEvents, setSelectedDateEvents] = useState(
-        setDateEvents(events || [], selectedDate)
+        calculateEventsForCurrentMonth(events).filter(
+            (eventDates) =>
+                eventDates.date === moment(selectedDate).format('YYYY-MM-DD')
+        )
+    );
+    const [monthlyEvents, setMonthlyEvents] = useState(
+        calculateEventsForCurrentMonth(events)
     );
 
     const [month, setMonth] = useState(moment().format('MMMM YYYY'));
@@ -27,22 +31,12 @@ export default function CalendarScreen() {
         'background'
     );
 
-    // const [eventDates, setEventDates] = useState<string[]>(
-    //     createDateArrayForCurrentMonth(
-    //         month,
-    //         events.filter((event: Event) => event.repeat !== null) || []
-    //     )
-    // );
-
     useEffect(() => {
-        createDateArrayForCurrentMonth(
-            month,
-            events.filter((event: Event) => event.repeat !== null) || []
-        );
         setSelectedDateEvents(
-            setDateEvents(
-                events.filter((event: Event) => event.repeat !== null) || [],
-                selectedDate
+            calculateEventsForCurrentMonth(events).filter(
+                (eventDates) =>
+                    eventDates.date ===
+                    moment(selectedDate).format('YYYY-MM-DD')
             )
         );
     }, [selectedDate, events]);
@@ -61,18 +55,13 @@ export default function CalendarScreen() {
                     </TouchableOpacity>
                 </View>
                 <CalendarView
-                    eventDates={createDateArrayForCurrentMonth(
-                        month,
-                        events.filter(
-                            (event: Event) => event.repeat !== null
-                        ) || []
-                    )}
+                    eventDates={monthlyEvents}
                     calendarBg={backgroundColor}
                     updateSelectedDate={setSelectedDate}
                 />
                 <CalendarDayInfo
                     date={selectedDate}
-                    events={selectedDateEvents}
+                    eventDates={selectedDateEvents}
                 />
             </ThemedView>
         </ScrollView>
