@@ -4,10 +4,8 @@ import TitleText from '@/components/common/TitleText';
 import { ThemedView } from '@/components/ThemedView';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useEventsStore } from '@/stores/useEventStore';
-import Event from '@/types/models/Event';
 import {
     calculateEventsForCurrentMonth,
-    createDateArrayForCurrentMonth,
 } from '@/utils/scheduleHandler';
 import Entypo from '@expo/vector-icons/Entypo';
 import moment from 'moment';
@@ -40,10 +38,6 @@ export default function CalendarScreen() {
                     eventDates.date ===
                     moment(selectedDate).format('YYYY-MM-DD')
             )
-        );
-        createDateArrayForCurrentMonth(
-            month,
-            events.filter((event: Event) => event.repeat !== null) || []
         );
     }, [selectedDate, events]);
 
