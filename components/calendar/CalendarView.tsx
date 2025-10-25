@@ -1,4 +1,6 @@
+import type { EventDate } from '@/types/models/Event';
 import dayjs from 'dayjs';
+import moment from 'moment';
 import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { Calendar } from 'react-native-calendars';
@@ -12,7 +14,7 @@ export default function CustomCalendarScreen({
     updateSelectedDate, 
 }: {
     calendarBg?: string;
-    eventDates?: string[]; 
+    eventDates?: EventDate[]; 
     updateSelectedDate?: (date: string) => void;
 }) {
     const [currentDate, setCurrentDate] = useState(
@@ -20,13 +22,14 @@ export default function CustomCalendarScreen({
     );
 
     const [viewDate, setViewDate] = useState({
-        [dayjs().format('YYYY-MM-DD')]: {
+        [moment().format('YYYY-MM-DD')]: {
             marked: true,
             dotColor: '#fff',
             selected: true,
             selectedColor: '#FF6B00',
         },
     });
+    
 
     // the markedDates will be the dates that have the events on them. There should only be one highlighted one properly, and for this one it will be have the circle thign around it
 
@@ -34,6 +37,8 @@ export default function CustomCalendarScreen({
         const newDate = dayjs(currentDate).add(offset, 'month');
         setCurrentDate(newDate.format('YYYY-MM-DD'));
     };
+
+    const todaysItems = eventDates?.filter((eventDate) => eventDate.date === moment().format('YYYY-MM-DD'))
 
     return (
         <View className="background-black">
@@ -58,7 +63,7 @@ export default function CustomCalendarScreen({
                 markedDates={viewDate}
                 dayComponent={({ date, state }) =>{
                     //@ts-ignore
-                    const eventCount = eventDates?.filter((eventDate) => eventDate === date.dateString).length || 0;
+                    const eventCount = eventDates?.filter((eventDate) => eventDate.date === date.dateString).length || 0;
                     return (
                     <CalendarDay
                         date={date}

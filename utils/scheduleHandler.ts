@@ -1,7 +1,6 @@
+import type { EventDate } from '@/types/models/Event';
 import Event from '@/types/models/Event';
 import moment from 'moment';
-
-type DateEvent = { date: string; eventID: number };
 
 export function isWeeklyTrigger(startDate: Date) {
     const diffInDays = moment().diff(moment(startDate), 'days');
@@ -109,8 +108,8 @@ export function calculateCompletionPercentage(startDate: Date, endDate: Date) {
     return Math.min(100, Math.max(0, progress));
 }
 
-export function calculateEventsForCurrentMonth(events: Event[]): DateEvent[] {
-    let dateEvents: DateEvent[] = [];
+export function calculateEventsForCurrentMonth(events: Event[]): EventDate[] {
+    let dateEvents: EventDate[] = [];
     const endOfMonth = moment().endOf('month');
     const startOfMonth = moment().startOf('month');
 
@@ -158,14 +157,14 @@ export function calculateEventsForCurrentMonth(events: Event[]): DateEvent[] {
     return dateEvents;
 }
 
-function generateDailyEventObjects(event: Event): DateEvent[] {
+function generateDailyEventObjects(event: Event): EventDate[] {
     let current = moment(event.created_at);
     const endOfMonth = moment().endOf('month');
     const endOfEvent = moment(event.created_at).add(
         event.repeat?.duration_in_weeks,
         'weeks'
     );
-    let dateObjects: DateEvent[] = [];
+    let dateObjects: EventDate[] = [];
     while (
         current.isSameOrBefore(endOfMonth, 'day') &&
         current.isBefore(endOfEvent)
@@ -179,8 +178,8 @@ function generateDailyEventObjects(event: Event): DateEvent[] {
     return dateObjects;
 }
 
-function generateWeeklyEventObjects(event: Event): DateEvent[] {
-    let dateObjects: DateEvent[] = [];
+function generateWeeklyEventObjects(event: Event): EventDate[] {
+    let dateObjects: EventDate[] = [];
     const { repeat } = event;
 
     let current = moment(event.created_at);
@@ -195,11 +194,11 @@ function generateWeeklyEventObjects(event: Event): DateEvent[] {
         current.isBefore(endOfEvent)
     ) {
         if (repeat?.times_per_week && repeat?.times_per_week! > 1) {
-            let startOfWeek = current.clone().startOf('isoWeek');
+            let startOfWeek = current.startOf('isoWeek');
             let increment = Math.floor(7 / (repeat?.times_per_week ?? 1));
             let count = 0;
             while (count !== repeat.times_per_week) {
-                const newDate = startOfWeek.clone().add(increment, 'days');
+                const newDate = startOfWeek.add(increment, 'days');
                 dateObjects.push({
                     date: newDate.format('YYYY-MM-DD'),
                     eventID: event.id,

@@ -1,4 +1,5 @@
-import Event from '@/types/models/Event';
+import { useEventsStore } from '@/stores/useEventStore';
+import Event, { EventDate } from '@/types/models/Event';
 import { AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
@@ -10,15 +11,22 @@ import TitleText from '../common/TitleText';
 import EventForm from '../events/EventForm';
 
 export default function CalendarDayInfo({
-    events,
+    eventDates,
     date,
 }: {
-    events: Event[];
+    eventDates: EventDate[];
     date: string;
 }) {
+    const { events } = useEventsStore();
     const [isCreating, setIsCreating] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [editEvent, setEditEvent] = useState({} as Event);
+    const dayEvents = eventDates.map((eventDate) => {
+        return events.find((event) => {
+            return event.id === eventDate.eventID;
+        });
+    });
+
     const [success, setSuccess] = useState(false);
     const opacity = useRef(new Animated.Value(0)).current;
     const scale = useRef(new Animated.Value(0.9)).current;
@@ -57,8 +65,9 @@ export default function CalendarDayInfo({
                 className="mb-2"
                 title={moment(date).format('ddd Do MMM')}
             />
-            {events.length > 0 ? (
-                events.map((event: Event) => (
+            {dayEvents.length > 0 ? (
+                //@ts-ignore
+                dayEvents.map((event: Event) => (
                     <TouchableOpacity
                         key={event.id}
                         onPress={() => handleEventPress(event.id)}
@@ -83,9 +92,10 @@ export default function CalendarDayInfo({
                         isSubmitting={isSubmitting}
                         event={editEvent}
                         setSuccess={handleSuccess}
-                        closeForm={() =>{ 
-                            setIsSubmitting(false) 
-                            setIsCreating(false)}}
+                        closeForm={() => {
+                            setIsSubmitting(false);
+                            setIsCreating(false);
+                        }}
                     />
                 </Animated.View>
             )}
@@ -94,7 +104,7 @@ export default function CalendarDayInfo({
                     if (isCreating) {
                         setIsSubmitting(true);
                     } else {
-                        setIsSubmitting(false); 
+                        setIsSubmitting(false);
                         setSuccess(false);
                         setIsCreating(!isCreating);
                     }
