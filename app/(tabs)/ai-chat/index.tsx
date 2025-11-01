@@ -139,7 +139,9 @@ Every step is built to push you forward. Check your calendar, lock in your focus
                 >
                     <FontAwesome name="send" size={24} color="#FF6B00" />
                 </TouchableOpacity>
-                {/* <FontAwesome
+                {/* @todo - add voice stuff
+                
+                <FontAwesome
                     name="microphone"
                     size={24}
                     color="#FF6B00"
