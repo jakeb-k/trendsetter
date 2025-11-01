@@ -46,6 +46,7 @@ export function calculateEventsForCurrentMonth(events: Event[]): EventDate[] {
             case 'weekly':
                 dateEvents.push(...generateWeeklyEventObjects(event));
                 break;
+            // @todo - implement this
             // case 'bi-monthly':
             //     generateDailyEventObjects(event);
             //     break;

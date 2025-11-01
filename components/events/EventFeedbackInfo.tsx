@@ -5,7 +5,7 @@ import moment from 'moment';
 import { Text, View } from 'react-native';
 
 export default function EventFeedbackInfo(eventFeedback?: EventFeedback) {
-    //@TODO - should have sliding actions (edit and delete) on event feedback but only for the current date
+    //@todo - should have sliding actions (edit and delete) on event feedback but only for the current date
     if (eventFeedback) {
         return (
             <View className="pl-4 my-4 border-2 border-primary shadow-lg shadow-primary rounded-lg p-2 relative">
