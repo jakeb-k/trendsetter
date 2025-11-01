@@ -41,11 +41,12 @@ export default function CalendarScreen() {
         );
     }, [selectedDate, events]);
 
-
     const changeMonth = (offset: any) => {
         const newDate = moment(currentDate).add(offset, 'month');
         setCurrentDate(newDate.format('YYYY-MM-DD'));
-        setMonthlyEvents(calculateEventsForCurrentMonth(events, newDate.format('YYYY-MM-DD')));
+        setMonthlyEvents(
+            calculateEventsForCurrentMonth(events, newDate.format('YYYY-MM-DD'))
+        );
     };
 
     return (
@@ -56,16 +57,22 @@ export default function CalendarScreen() {
                         className="font-bold text-3xl "
                         title={moment(currentDate).format('MMMM YYYY')}
                     />
-                    <TouchableOpacity onPress={() => changeMonth(-1)}>
-                        <Entypo name="chevron-left" size={40} color="#FF6B00" />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => changeMonth(1)}>
-                        <Entypo
-                            name="chevron-right"
-                            size={40}
-                            color="#FF6B00"
-                        />
-                    </TouchableOpacity>
+                    <View className='flex flex-row justify-between space-x-8'>
+                        <TouchableOpacity onPress={() => changeMonth(-1)}>
+                            <Entypo
+                                name="chevron-left"
+                                size={40}
+                                color="#FF6B00"
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => changeMonth(1)}>
+                            <Entypo
+                                name="chevron-right"
+                                size={40}
+                                color="#FF6B00"
+                            />
+                        </TouchableOpacity>
+                    </View>
                 </View>
                 <CalendarView
                     eventDates={monthlyEvents}

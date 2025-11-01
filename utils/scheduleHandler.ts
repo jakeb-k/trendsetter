@@ -52,7 +52,6 @@ export function calculateEventsForCurrentMonth(events: Event[], currentMonthDate
             //     break;
             case 'monthly':
                 const monthlyEvent = generateMonthlyEventObjects(event, endOfMonth);
-                console.log(monthlyEvent)
                 if(monthlyEvent){
                     dateEvents.push(monthlyEvent);
                 }
@@ -72,7 +71,6 @@ function generateDailyEventObjects(event: Event, endOfMonth: Moment): EventDate[
         'weeks'
     );
     let dateObjects: EventDate[] = [];
-    console.log(endOfEvent.format('YYYY-MM-DD'))
     while (
         current.isSameOrBefore(endOfMonth, 'day') &&
         current.isBefore(endOfEvent)

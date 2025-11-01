@@ -52,6 +52,9 @@ export default function CustomCalendarScreen({
                 hideExtraDays={true}
                 hideDayNames={true}
                 markedDates={viewDate}
+                //@todo make this work for swipe
+                onMonthChange={(date) => console.log(date)}
+                enableSwipeMonths
                 dayComponent={({ date, state }) =>{
                     //@ts-ignore
                     const eventCount = eventDates?.filter((eventDate) => eventDate.date === moment(date.dateString).format('YYYY-MM-DD')).length || 0;
