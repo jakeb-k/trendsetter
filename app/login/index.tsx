@@ -51,7 +51,7 @@ export default function LoginScreen() {
                     'user',
                     JSON.stringify(response.user)
                 );
-                router.replace('/');
+                router.push('/');
             })
             .catch((error) => {
                 console.error(error);
@@ -103,7 +103,7 @@ export default function LoginScreen() {
                 <Text className="text-white/80 text-lg font-satoshi text-center">
                     Don't have an account?
                 </Text>
-                <TouchableOpacity onPress={() => router.replace('/')}>
+                <TouchableOpacity onPress={() => router.push('/')}>
                     <Text className="text-primary text-lg font-satoshi">
                         Sign Up
                     </Text>

@@ -8,7 +8,7 @@ import { useEventsStore } from '@/stores/useEventStore';
 import EventFeedback from '@/types/models/EventFeedback';
 import { AntDesign, Entypo } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import moment from 'moment';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -94,6 +94,7 @@ export default function EventDetailLayout() {
                     <View className="flex flex-col w-full mt-6">
                         <TouchableOpacity>
                             <Entypo
+                                onPress={() => router.navigate('/calendar')}
                                 name="chevron-left"
                                 size={32}
                                 color="#FF6B00"
@@ -109,6 +110,7 @@ export default function EventDetailLayout() {
                         <Text className="text-white text-xl font-satoshi">
                             {moment(date).format('ddd MMM Do')}
                         </Text>
+                        {/* @todo use real data */}
                         <Text className="rounded-lg bg-lightprimary text-white px-2 py-1 font-semibold font-satoshi italic shadow-md shadow-primary">
                             7 STREAK
                         </Text>
