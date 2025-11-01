@@ -38,8 +38,6 @@ export default function CustomCalendarScreen({
         setCurrentDate(newDate.format('YYYY-MM-DD'));
     };
 
-    const todaysItems = eventDates?.filter((eventDate) => eventDate.date === moment().format('YYYY-MM-DD'))
-
     return (
         <View className="background-black">
             <View className="flex flex-row justify-between ">
@@ -63,7 +61,7 @@ export default function CustomCalendarScreen({
                 markedDates={viewDate}
                 dayComponent={({ date, state }) =>{
                     //@ts-ignore
-                    const eventCount = eventDates?.filter((eventDate) => eventDate.date === date.dateString).length || 0;
+                    const eventCount = eventDates?.filter((eventDate) => eventDate.date === moment(date.dateString).format('YYYY-MM-DD')).length || 0;
                     return (
                     <CalendarDay
                         date={date}

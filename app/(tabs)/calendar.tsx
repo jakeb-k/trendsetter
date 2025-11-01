@@ -21,9 +21,7 @@ export default function CalendarScreen() {
                 eventDates.date === moment(selectedDate).format('YYYY-MM-DD')
         )
     );
-    const [monthlyEvents, setMonthlyEvents] = useState(
-        calculateEventsForCurrentMonth(events)
-    );
+    const monthlyEvents = calculateEventsForCurrentMonth(events)
 
     const [month, setMonth] = useState(moment().format('MMMM YYYY'));
     const backgroundColor = useThemeColor(
@@ -40,6 +38,7 @@ export default function CalendarScreen() {
             )
         );
     }, [selectedDate, events]);
+
 
     return (
         <ScrollView className="flex-1 bg-secondary">
