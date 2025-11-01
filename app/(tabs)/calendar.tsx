@@ -57,7 +57,7 @@ export default function CalendarScreen() {
                         className="font-bold text-3xl "
                         title={moment(currentDate).format('MMMM YYYY')}
                     />
-                    <View className='flex flex-row justify-between space-x-8'>
+                    <View className='flex flex-row justify-between space-x-6'>
                         <TouchableOpacity onPress={() => changeMonth(-1)}>
                             <Entypo
                                 name="chevron-left"
