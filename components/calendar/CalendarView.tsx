@@ -1,5 +1,4 @@
 import type { EventDate } from '@/types/models/Event';
-import dayjs from 'dayjs';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { Text, View } from 'react-native';
@@ -11,15 +10,14 @@ const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 export default function CustomCalendarScreen({
     calendarBg,
     eventDates,
+    currentDate,
     updateSelectedDate, 
 }: {
     calendarBg?: string;
     eventDates?: EventDate[]; 
+    currentDate: string; 
     updateSelectedDate?: (date: string) => void;
 }) {
-    const [currentDate, setCurrentDate] = useState(
-        dayjs().format('YYYY-MM-DD')
-    );
 
     const [viewDate, setViewDate] = useState({
         [moment().format('YYYY-MM-DD')]: {
@@ -29,14 +27,8 @@ export default function CustomCalendarScreen({
             selectedColor: '#FF6B00',
         },
     });
-    
 
     // the markedDates will be the dates that have the events on them. There should only be one highlighted one properly, and for this one it will be have the circle thign around it
-
-    const changeMonth = (offset: any) => {
-        const newDate = dayjs(currentDate).add(offset, 'month');
-        setCurrentDate(newDate.format('YYYY-MM-DD'));
-    };
 
     return (
         <View className="background-black">
@@ -53,6 +45,7 @@ export default function CustomCalendarScreen({
 
             {/* Calendar */}
             <Calendar
+                key={currentDate}
                 current={currentDate}
                 hideArrows={true}
                 renderHeader={() => null}

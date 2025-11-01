@@ -1,6 +1,6 @@
 import type { EventDate } from '@/types/models/Event';
 import Event from '@/types/models/Event';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 
 export function calculateCompletionPercentage(startDate: Date, endDate: Date) {
     const totalDiffInDays = moment(endDate).diff(moment(startDate), 'days');
@@ -12,10 +12,10 @@ export function calculateCompletionPercentage(startDate: Date, endDate: Date) {
     return Math.min(100, Math.max(0, progress));
 }
 
-export function calculateEventsForCurrentMonth(events: Event[]): EventDate[] {
+export function calculateEventsForCurrentMonth(events: Event[], currentMonthDate:string): EventDate[] {
     let dateEvents: EventDate[] = [];
-    const endOfMonth = moment().endOf('month');
-    const startOfMonth = moment().startOf('month');
+    const endOfMonth = moment(currentMonthDate).endOf('month');
+    const startOfMonth = moment(currentMonthDate).startOf('month');
 
     events.forEach((event) => {
         const { repeat } = event;
@@ -39,37 +39,37 @@ export function calculateEventsForCurrentMonth(events: Event[]): EventDate[] {
             if (startOfMonth.isAfter(endOfEvent)) return;
         }
 
+        console.log(endOfMonth)
         switch (repeat.frequency) {
             case 'daily':
-                dateEvents.push(...generateDailyEventObjects(event));
+                dateEvents.push(...generateDailyEventObjects(event, endOfMonth));
                 break;
             case 'weekly':
-                dateEvents.push(...generateWeeklyEventObjects(event));
+                dateEvents.push(...generateWeeklyEventObjects(event, endOfMonth));
                 break;
             // @todo - implement this
             // case 'bi-monthly':
             //     generateDailyEventObjects(event);
             //     break;
             case 'monthly':
-                dateEvents.push(generateMonthlyEventObjects(event));
+                dateEvents.push(generateMonthlyEventObjects(event, endOfMonth));
                 break;
 
             default:
                 break;
         }
     });
-
     return dateEvents;
 }
 
-function generateDailyEventObjects(event: Event): EventDate[] {
+function generateDailyEventObjects(event: Event, endOfMonth: Moment): EventDate[] {
     let current = moment(event.created_at);
-    const endOfMonth = moment().endOf('month');
     const endOfEvent = moment(event.created_at).add(
         event.repeat?.duration_in_weeks,
         'weeks'
     );
     let dateObjects: EventDate[] = [];
+    console.log(endOfEvent.format('YYYY-MM-DD'))
     while (
         current.isSameOrBefore(endOfMonth, 'day') &&
         current.isBefore(endOfEvent)
@@ -83,12 +83,11 @@ function generateDailyEventObjects(event: Event): EventDate[] {
     return dateObjects;
 }
 
-function generateWeeklyEventObjects(event: Event): EventDate[] {
+function generateWeeklyEventObjects(event: Event, endOfMonth: Moment): EventDate[] {
     let dateObjects: EventDate[] = [];
     const { repeat } = event;
 
     let current = moment(event.created_at);
-    const endOfMonth = moment().endOf('month');
     const endOfEvent = moment(event.created_at).add(
         event.repeat?.duration_in_weeks,
         'weeks'
@@ -121,8 +120,8 @@ function generateWeeklyEventObjects(event: Event): EventDate[] {
     return dateObjects;
 }
 
-function generateMonthlyEventObjects(event: Event) {
-    const currentMonthValue = moment().month() + 1;
+function generateMonthlyEventObjects(event: Event, endOfMonth: Moment) {
+    const currentMonthValue = moment(endOfMonth).month() + 1;
     const dateValue = moment(event.created_at).format('YYYY-MM-DD');
     const [year, , day] = dateValue.split('-');
     return {
