@@ -1,5 +1,4 @@
 import type { EventDate } from '@/types/models/Event';
-import dayjs from 'dayjs';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { Text, View } from 'react-native';
@@ -11,15 +10,14 @@ const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 export default function CustomCalendarScreen({
     calendarBg,
     eventDates,
+    currentDate,
     updateSelectedDate, 
 }: {
     calendarBg?: string;
     eventDates?: EventDate[]; 
+    currentDate: string; 
     updateSelectedDate?: (date: string) => void;
 }) {
-    const [currentDate, setCurrentDate] = useState(
-        dayjs().format('YYYY-MM-DD')
-    );
 
     const [viewDate, setViewDate] = useState({
         [moment().format('YYYY-MM-DD')]: {
@@ -29,16 +27,8 @@ export default function CustomCalendarScreen({
             selectedColor: '#FF6B00',
         },
     });
-    
 
     // the markedDates will be the dates that have the events on them. There should only be one highlighted one properly, and for this one it will be have the circle thign around it
-
-    const changeMonth = (offset: any) => {
-        const newDate = dayjs(currentDate).add(offset, 'month');
-        setCurrentDate(newDate.format('YYYY-MM-DD'));
-    };
-
-    const todaysItems = eventDates?.filter((eventDate) => eventDate.date === moment().format('YYYY-MM-DD'))
 
     return (
         <View className="background-black">
@@ -55,15 +45,19 @@ export default function CustomCalendarScreen({
 
             {/* Calendar */}
             <Calendar
+                key={currentDate}
                 current={currentDate}
                 hideArrows={true}
                 renderHeader={() => null}
                 hideExtraDays={true}
                 hideDayNames={true}
                 markedDates={viewDate}
+                //@todo make this work for swipe
+                onMonthChange={(date) => console.log(date)}
+                enableSwipeMonths
                 dayComponent={({ date, state }) =>{
                     //@ts-ignore
-                    const eventCount = eventDates?.filter((eventDate) => eventDate.date === date.dateString).length || 0;
+                    const eventCount = eventDates?.filter((eventDate) => eventDate.date === moment(date.dateString).format('YYYY-MM-DD')).length || 0;
                     return (
                     <CalendarDay
                         date={date}

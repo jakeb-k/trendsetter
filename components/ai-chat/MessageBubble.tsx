@@ -12,7 +12,7 @@ export default function MessageBubble({ message }: { message: Message }) {
         >
             <Text
                 className={`${
-                    message.sender === 'bot' ? 'bg-gray-700' : 'bg-primary'
+                    message.sender === 'bot' ? 'bg-white/10' : 'bg-primary'
                 } text-white px-4 py-2 rounded-lg text-base font-satoshi`}
             >
                 {message.content}

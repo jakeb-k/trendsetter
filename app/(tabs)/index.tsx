@@ -4,31 +4,46 @@ import TodaysFocus from '@/components/index/TodaysFocus';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { useEventsStore } from '@/stores/useEventStore';
 import { useGoalsStore } from '@/stores/useGoalStore';
-import { setDateEvents, setUpcomingEvents } from '@/utils/scheduleHandler';
+import { calculateEventsForCurrentMonth } from '@/utils/scheduleHandler';
+import moment from 'moment';
 import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 
 export default function HomeScreen() {
     const { events } = useEventsStore();
     const { goals } = useGoalsStore();
+    const monthlyEvents = calculateEventsForCurrentMonth(events);
 
     const todaysEvents = useMemo(() => {
-        //@ts-ignore
-        return setDateEvents(events || []);
+        const eventIDs = monthlyEvents
+            .filter(
+                (dateEvent) => dateEvent.date === moment().format('YYYY-MM-DD')
+            )
+            .map((fEventDates) => fEventDates.eventID);
+        return events.filter((event) => eventIDs.includes(event.id));
     }, [events]);
 
     const upcomingEvents = useMemo(() => {
-        //@ts-ignore
-        return setUpcomingEvents(events);
+        const repeatingEventIDs = events.map((event) => event.id);
+        const upcomingEvents = [];
+        repeatingEventIDs;
+        for (const eventID of repeatingEventIDs) {
+            const latestEvent = monthlyEvents.find(
+                (event) =>
+                    moment(event.date).isAfter(moment().format('YYYY-MM-DD')) &&
+                    event.eventID === eventID
+            );
+            if (latestEvent) {
+                upcomingEvents.push({
+                    ...latestEvent,
+                    event: events.find(
+                        (event) => event.id === latestEvent.eventID
+                    ),
+                });
+            }
+        }
+        return upcomingEvents;
     }, [events]);
-
-    const groupedEvents = upcomingEvents.reduce((acc, event) => {
-        const dateKey = new Date(event.upcomingDate).toDateString(); // to group by day
-        if (!acc[dateKey]) acc[dateKey] = [];
-        //@ts-ignore
-        acc[dateKey].push(event);
-        return acc;
-    }, {} as Record<string, Event[]>);
 
     return (
         <ParallaxScrollView
@@ -59,24 +74,19 @@ export default function HomeScreen() {
             >
                 <TodaysFocus todaysEvents={todaysEvents} />
                 <CurrentGoals goals={goals} />
-                {Object.keys(groupedEvents).length > 0 && (
+                {Object.keys(upcomingEvents).length > 0 && (
                     <Text className="text-white font-semibold text-lg ml-1">
                         Upcoming Events
                     </Text>
                 )}
-                {Object.entries(groupedEvents)
-                    .sort(
-                        ([a], [b]) =>
-                            new Date(a).getTime() - new Date(b).getTime()
-                    )
-                    .map(([date, events]) => (
-                        <NextEvents
-                            key={date}
-                            date={new Date(date)}
-                            //@ts-ignore
-                            events={events}
-                        />
-                    ))}
+                {upcomingEvents.map((event, index) => (
+                    <NextEvents
+                        key={index}
+                        date={new Date(event.date)}
+                        //@ts-ignore
+                        event={event.event}
+                    />
+                ))}
             </View>
         </ParallaxScrollView>
     );

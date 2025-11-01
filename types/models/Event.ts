@@ -1,4 +1,5 @@
 export default interface Event {
+    latestLogDate?: string;
     id: number;
     title: string;
     description: string;
