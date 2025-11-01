@@ -39,7 +39,6 @@ export function calculateEventsForCurrentMonth(events: Event[], currentMonthDate
             if (startOfMonth.isAfter(endOfEvent)) return;
         }
 
-        console.log(endOfMonth)
         switch (repeat.frequency) {
             case 'daily':
                 dateEvents.push(...generateDailyEventObjects(event, endOfMonth));
@@ -52,7 +51,11 @@ export function calculateEventsForCurrentMonth(events: Event[], currentMonthDate
             //     generateDailyEventObjects(event);
             //     break;
             case 'monthly':
-                dateEvents.push(generateMonthlyEventObjects(event, endOfMonth));
+                const monthlyEvent = generateMonthlyEventObjects(event, endOfMonth);
+                console.log(monthlyEvent)
+                if(monthlyEvent){
+                    dateEvents.push(monthlyEvent);
+                }
                 break;
 
             default:
@@ -120,9 +123,10 @@ function generateWeeklyEventObjects(event: Event, endOfMonth: Moment): EventDate
     return dateObjects;
 }
 
-function generateMonthlyEventObjects(event: Event, endOfMonth: Moment) {
-    const currentMonthValue = moment(endOfMonth).month() + 1;
+function generateMonthlyEventObjects(event: Event, endOfMonth: Moment): undefined | EventDate {
     const dateValue = moment(event.created_at).format('YYYY-MM-DD');
+    if (endOfMonth.isBefore(dateValue)) return; 
+    const currentMonthValue = moment(endOfMonth).month() + 1;
     const [year, , day] = dateValue.split('-');
     return {
         date: `${year}-${String(currentMonthValue).padStart(2, '0')}-${day}`,
