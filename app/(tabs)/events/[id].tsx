@@ -21,7 +21,7 @@ import {
 
 export default function EventDetailLayout() {
     const { id } = useLocalSearchParams();
-    const { events } = useEventsStore();
+    const { events, setEvents } = useEventsStore();
     const [date, setDate] = useState(null);
     const [event, setEvent] = useState(() =>
         events.find((event) => event.id.toString() === id)
@@ -58,8 +58,6 @@ export default function EventDetailLayout() {
         getSelectedDate();
     }, []);
 
-    //console.log(eventFeedback)
-
     const requestEventFeedbackHistory = async (id: string) => {
         if (!id) return;
         return getEventFeedbackHistory(id.toString());
@@ -81,6 +79,13 @@ export default function EventDetailLayout() {
             }).start();
         }
     }, [isLogging]);
+
+    const setEventLogged = () => {
+        const updatedEvents = events.map((event) =>
+            event.id.toString() === id ? { ...event, latestLogDate: moment().format('YYYY-MM-DD')} : event
+        );
+        setEvents(updatedEvents);
+    };
 
     if (event) {
         return (
@@ -135,6 +140,7 @@ export default function EventDetailLayout() {
                                             return [newEvent, ...filtered];
                                         }
                                     );
+                                    setEventLogged();
                                     setSuccess(true);
                                     setIsLogging(false);
                                     setIsSubmitting(false);

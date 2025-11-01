@@ -1,14 +1,12 @@
 import { storeEventFeedback } from '@/api/eventsApi';
 import { MoodOptions, StatusOptions } from '@/constants/Enums';
 import Event from '@/types/models/Event';
-import EventFeedback from '@/types/models/EventFeedback';
 import { AntDesign } from '@expo/vector-icons';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 type Props = {
-    eventFeedback?: EventFeedback;
     event: Event;
     isSubmitting: boolean;
     setNewData: (newEvent: any) => void;
@@ -16,22 +14,20 @@ type Props = {
 };
 
 export default function EventFeedbackForm({
-    eventFeedback,
     event,
     isSubmitting,
     setNewData,
     closeForm,
 }: Props) {
     const [data, setData] = useState({
-        note: eventFeedback?.note ?? '',
-        status: eventFeedback?.status ?? '',
-        mood: eventFeedback?.mood ?? '',
+        note: '',
+        status: '',
+        mood: '',
         created_at: new Date(),
     });
 
     useEffect(() => {
         async function handleEventFeedbackRequest() {
-            console.log('sending')
             const newEvent = await storeEventFeedback(
                 data,
                 event.id.toString()
