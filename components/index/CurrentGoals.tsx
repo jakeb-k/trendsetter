@@ -1,5 +1,6 @@
 import Goal from '@/types/models/Goal';
 import { calculateCompletionPercentage } from '@/utils/scheduleHandler';
+import { Href, router } from 'expo-router';
 import moment from 'moment';
 import { Text, TouchableOpacity, View } from 'react-native';
 
@@ -11,8 +12,16 @@ export default function CurrentGoals({ goals }: { goals: Goal[] }) {
             </Text>
             {goals.length > 0 ? (
                 goals.map((goal: Goal) => (
-                    <View
+                    <TouchableOpacity
                         key={goal.id}
+                        onPress={() => {
+                            const href = {
+                                pathname: '/goals/[id]',
+                                params: { id: String(goal.id) },
+                            } as const;
+
+                            router.push(href as Href);
+                        }}
                         className="bg-[#1A1A1A] drop-shadow-md rounded-lg p-2 mt-2"
                     >
                         <View className="flex flex-row justify-between">
@@ -43,14 +52,16 @@ export default function CurrentGoals({ goals }: { goals: Goal[] }) {
                                 225 points
                             </Text>
                         </View>
-                    </View>
+                    </TouchableOpacity>
                 ))
             ) : (
-                <View className='p-2'>
-                    <Text className='text-white/80 font-satoshi text-lg'>
+                <View className="p-2">
+                    <Text className="text-white/80 font-satoshi text-lg">
                         You haven't set any goals yet - have a chat with{' '}
                         <TouchableOpacity>
-                            <Text className='text-primary font-satoshi text-lg'>Forge</Text>
+                            <Text className="text-primary font-satoshi text-lg">
+                                Forge
+                            </Text>
                         </TouchableOpacity>{' '}
                         to change that
                     </Text>
