@@ -30,7 +30,7 @@ export default function GoalDetailLayout() {
     const { id } = useLocalSearchParams();
     const { goals } = useGoalsStore();
     const { events } = useEventsStore();
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [goalFeedback, setGoalFeedback] = useState<GoalFeedback>(
         {} as GoalFeedback
     );
@@ -76,6 +76,7 @@ export default function GoalDetailLayout() {
                 .then((response) => {
                     console.log(response);
                     setGoalFeedback(response.feedback);
+                    setIsLoading(false)
                 })
                 .catch((err) => {
                     console.error(err);
@@ -139,7 +140,7 @@ export default function GoalDetailLayout() {
                     <View className="mt-6 h-fit mb-8">
                         <Text
                             className={`text-white text-lg font-satoshi font-bold ${
-                                loading ? 'pb-32' : ''
+                                isLoading ? 'pb-32' : ''
                             }`}
                         >
                             History

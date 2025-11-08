@@ -27,7 +27,7 @@ export default function EventDetailLayout() {
         events.find((event) => event.id.toString() === id)
     );
     const [eventFeedback, setEventFeedback] = useState<EventFeedback[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     const [success, setSuccess] = useState(false);
     const [isLogging, setIsLogging] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -48,7 +48,7 @@ export default function EventDetailLayout() {
             if (data) {
                 //console.log(data);
                 setEventFeedback(data.feedback);
-                setLoading(false);
+                setIsLoading(false);
             } else {
                 console.error('Failed to fetch event feedback');
             }
@@ -187,12 +187,12 @@ export default function EventDetailLayout() {
                     <View className="mt-6 h-fit pb-32">
                         <Text
                             className={`text-white text-lg font-satoshi font-bold ${
-                                loading ? 'pb-32' : ''
+                                isLoading ? 'pb-32' : ''
                             }`}
                         >
                             History
                         </Text>
-                        {loading ? (
+                        {isLoading ? (
                             <View className="w-full flex flex-col items-center justify-center h-full pt-24">
                                 <View className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin" />
                             </View>
