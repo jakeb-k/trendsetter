@@ -74,7 +74,6 @@ export default function GoalDetailLayout() {
         const fetchGoalFeedback = async () => {
             getGoalFeedbackHistory(id.toString())
                 .then((response) => {
-                    console.log(response);
                     setGoalFeedback(response.feedback);
                     setIsLoading(false)
                 })
