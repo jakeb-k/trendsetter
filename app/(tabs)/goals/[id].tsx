@@ -47,6 +47,8 @@ export default function GoalDetailLayout() {
         0
     );
 
+    const completionPercentage = Number(((currentProgressPoints / maxProgressPoints)).toFixed(2))
+
     const monthlyEvents = calculateEventsForCurrentMonth(events);
     const daysLeft = moment(goal.end_date).diff(moment(), 'days');
 
@@ -123,7 +125,7 @@ export default function GoalDetailLayout() {
                     <View className="my-8">
                         <ProgressWheel
                             size={150}
-                            progress={0.65}
+                            progress={completionPercentage}
                             label="Towards Goal"
                         />
                     </View>
