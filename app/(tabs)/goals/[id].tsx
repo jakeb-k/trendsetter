@@ -9,6 +9,7 @@ import { useEventsStore } from '@/stores/useEventStore';
 import { useGoalsStore } from '@/stores/useGoalStore';
 import Event from '@/types/models/Event';
 import EventFeedback from '@/types/models/EventFeedback';
+import { calculateMaxProgressForGoal } from '@/utils/progressCalculator';
 import { calculateEventsForCurrentMonth } from '@/utils/scheduleHandler';
 import { Entypo } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -34,11 +35,11 @@ export default function GoalDetailLayout() {
     const [goalFeedback, setGoalFeedback] = useState<GoalFeedback>(
         {} as GoalFeedback
     );
-
+    
     const goal = goals.find((goal) => goal.id.toString() === id)!;
-
+    
+    const maxProgressPoints = calculateMaxProgressForGoal(goal, events)
     const monthlyEvents = calculateEventsForCurrentMonth(events);
-
     const daysLeft = moment(goal.end_date).diff(moment(), 'days')
 
     const upcomingEvents = useMemo(() => {
