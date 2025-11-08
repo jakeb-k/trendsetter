@@ -14,9 +14,9 @@ import { useMemo, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 interface UpcomingEvent {
-    date: string, 
-    event: Event,
-    eventID: number, 
+    date: string;
+    event: Event;
+    eventID: number;
 }
 
 export default function GoalDetailLayout() {
