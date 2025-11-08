@@ -19,7 +19,7 @@ export default function LoginScreen() {
             [key]: value,
         }));
     };
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const { setEvents } = useEventsStore();
     const { setGoals } = useGoalsStore();

@@ -42,7 +42,7 @@ export async function getGoals() {
         });
         return res.data;
     } catch (err) {
-        console.error('Event Feedback History request failed:', err);
+        console.error('Cannot get goals:', err);
         return { error: true, message: err || 'Unknown error' };
     }
 }

@@ -26,7 +26,6 @@ export default function HomeScreen() {
     const upcomingEvents = useMemo(() => {
         const repeatingEventIDs = events.map((event) => event.id);
         const upcomingEvents = [];
-        repeatingEventIDs;
         for (const eventID of repeatingEventIDs) {
             const latestEvent = monthlyEvents.find(
                 (event) =>

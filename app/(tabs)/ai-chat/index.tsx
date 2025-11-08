@@ -32,7 +32,7 @@ What's the goal you're chasing right now?`,
             sender: 'bot',
         },
     ]);
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [newMessage, setNewMessage] = useState<string>('');
     const [goalDescription, setGoalDescription] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -46,7 +46,7 @@ What's the goal you're chasing right now?`,
             firstGoalMessage = newMessage;
             setGoalDescription(newMessage);
         }
-        setLoading(true);
+        setIsLoading(true);
         setMessages((prevMessages) => [
             ...prevMessages,
             { content: newMessage, sender: 'user' },
@@ -91,7 +91,7 @@ Every step is built to push you forward. Check your calendar, lock in your focus
                         console.error('AsyncStorage write failed:', error);
                     }
                 }
-                setLoading(false);
+                setIsLoading(false);
             } else {
                 console.error(response.error);
                 setError(
@@ -111,7 +111,7 @@ Every step is built to push you forward. Check your calendar, lock in your focus
                     <MessageBubble key={index} message={message} />
                 ))}
 
-                {loading && <TypingLoader />}
+                {isLoading && <TypingLoader />}
                 {finished && (
                     <PrimaryButton onPress={() => router.navigate('/')}>
                         <Text className="font-satoshi text-center text-white font-bold text-lg ">
@@ -125,7 +125,7 @@ Every step is built to push you forward. Check your calendar, lock in your focus
                     multiline={true}
                     value={newMessage}
                     textAlignVertical="top"
-                    editable={!loading}
+                    editable={!isLoading}
                     placeholder="Type your message..."
                     placeholderTextColor="#ccc"
                     style={{ maxHeight: 120 }}

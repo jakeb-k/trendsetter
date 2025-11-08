@@ -12,7 +12,7 @@ export function calculateCompletionPercentage(startDate: Date, endDate: Date) {
     return Math.min(100, Math.max(0, progress));
 }
 
-export function calculateEventsForCurrentMonth(events: Event[], currentMonthDate:string): EventDate[] {
+export function calculateEventsForCurrentMonth(events: Event[], currentMonthDate?:string): EventDate[] {
     let dateEvents: EventDate[] = [];
     const endOfMonth = moment(currentMonthDate).endOf('month');
     const startOfMonth = moment(currentMonthDate).startOf('month');
