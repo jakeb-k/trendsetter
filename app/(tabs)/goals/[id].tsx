@@ -35,9 +35,11 @@ export default function GoalDetailLayout() {
         {} as GoalFeedback
     );
 
-    const goal = goals.find((goal) => goal.id.toString() === id);
+    const goal = goals.find((goal) => goal.id.toString() === id)!;
 
     const monthlyEvents = calculateEventsForCurrentMonth(events);
+
+    const daysLeft = moment(goal.end_date).diff(moment(), 'days')
 
     const upcomingEvents = useMemo(() => {
         const goalEventIDs = events
@@ -86,7 +88,6 @@ export default function GoalDetailLayout() {
         return (
             <ScrollView className="flex-1 bg-secondary">
                 <ThemedView className="min-h-screen w-full px-8 overflow-y-scroll pb-48">
-                    {/* goal progres section */}
                     <View className="flex flex-col w-full mt-6">
                         <TouchableOpacity>
                             <Entypo
@@ -97,10 +98,13 @@ export default function GoalDetailLayout() {
                                 className="-ml-2"
                             />
                         </TouchableOpacity>
-                        <TitleText
-                            className="font-bold text-2xl mt-4"
-                            title={goal.title}
-                        />
+                        <View>
+                            <TitleText
+                                className="font-bold text-2xl mt-4"
+                                title={goal.title}
+                            />
+                            <Text className='font-bold text-xl font-satoshi text-lightprimary italic my-2'>{daysLeft} Days Left</Text>
+                        </View>
                     </View>
                     <Text className="font-satoshi text-white/70 italic text-base">
                         {goal.description}
@@ -117,7 +121,7 @@ export default function GoalDetailLayout() {
                             Complete Goal
                         </Text>
                     </PrimaryButton>
-                    <View className='mt-6 h-fit'>
+                    <View className="mt-6 h-fit">
                         {Object.keys(upcomingEvents).length > 0 && (
                             <Text className="text-white font-semibold text-lg ml-1">
                                 Upcoming Events
