@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createJSONStorage, persist } from 'expo-zustand-persist';
 import { create } from 'zustand';
 interface Event {
+    goal_id: string;
     hasLogged?: boolean
     id: number;
     title: string;
