@@ -1,16 +1,19 @@
+import { getGoalFeedbackHistory } from '@/api/goalsApi';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import ProgressWheel from '@/components/common/ProgressWheel';
 import TitleText from '@/components/common/TitleText';
+import EventFeedbackInfo from '@/components/events/EventFeedbackInfo';
 import NextEvents from '@/components/index/NextEvents';
 import { ThemedView } from '@/components/ThemedView';
 import { useEventsStore } from '@/stores/useEventStore';
 import { useGoalsStore } from '@/stores/useGoalStore';
 import Event from '@/types/models/Event';
+import EventFeedback from '@/types/models/EventFeedback';
 import { calculateEventsForCurrentMonth } from '@/utils/scheduleHandler';
 import { Entypo } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import moment from 'moment';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 interface UpcomingEvent {
@@ -19,11 +22,18 @@ interface UpcomingEvent {
     eventID: number;
 }
 
+interface GoalFeedback {
+    string: EventFeedback[];
+}
+
 export default function GoalDetailLayout() {
     const { id } = useLocalSearchParams();
     const { goals } = useGoalsStore();
     const { events } = useEventsStore();
     const [loading, setLoading] = useState(false);
+    const [goalFeedback, setGoalFeedback] = useState<GoalFeedback>(
+        {} as GoalFeedback
+    );
 
     const goal = goals.find((goal) => goal.id.toString() === id);
 
@@ -58,10 +68,24 @@ export default function GoalDetailLayout() {
         return upcomingEvents;
     }, [events]);
 
+    useEffect(() => {
+        const fetchGoalFeedback = async () => {
+            getGoalFeedbackHistory(id.toString())
+                .then((response) => {
+                    console.log(response);
+                    setGoalFeedback(response.feedback);
+                })
+                .catch((err) => {
+                    console.error(err);
+                });
+        };
+        fetchGoalFeedback();
+    }, []);
+
     if (goal) {
         return (
             <ScrollView className="flex-1 bg-secondary">
-                <ThemedView className="min-h-screen w-full px-8 overflow-y-scroll  pb-48">
+                <ThemedView className="min-h-screen w-full px-8 overflow-y-scroll pb-48">
                     {/* goal progres section */}
                     <View className="flex flex-col w-full mt-6">
                         <TouchableOpacity>
@@ -93,7 +117,22 @@ export default function GoalDetailLayout() {
                             Complete Goal
                         </Text>
                     </PrimaryButton>
-                    <View className="mt-6 h-fit pb-32">
+                    <View className='mt-6 h-fit'>
+                        {Object.keys(upcomingEvents).length > 0 && (
+                            <Text className="text-white font-semibold text-lg ml-1">
+                                Upcoming Events
+                            </Text>
+                        )}
+                        {upcomingEvents.map((event, index) => (
+                            <NextEvents
+                                key={index}
+                                date={new Date(event.date)}
+                                //@ts-ignore
+                                event={event.event}
+                            />
+                        ))}
+                    </View>
+                    <View className="mt-6 h-fit mb-8">
                         <Text
                             className={`text-white text-lg font-satoshi font-bold ${
                                 loading ? 'pb-32' : ''
@@ -101,34 +140,25 @@ export default function GoalDetailLayout() {
                         >
                             History
                         </Text>
-                        {loading ? (
-                            <View className="w-full flex flex-col items-center justify-center h-full pt-24">
-                                <View className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-                            </View>
-                        ) : (
+                        {Object.entries(goalFeedback).map(([key, items]) => (
                             <>
-                                {/* {eventFeedback.map((eventFeedbackItem) => (
-                                    <EventFeedbackInfo
-                                        key={eventFeedbackItem.id}
-                                        {...eventFeedbackItem}
-                                    />
-                                ))} */}
+                                <Text className="text-white/80 text-base font-satoshi mt-4">
+                                    {key}
+                                </Text>
+                                {items.map(
+                                    (
+                                        feedback: EventFeedback,
+                                        index: number
+                                    ) => (
+                                        <EventFeedbackInfo
+                                            key={index}
+                                            {...feedback}
+                                        />
+                                    )
+                                )}
                             </>
-                        )}
+                        ))}
                     </View>
-                    {Object.keys(upcomingEvents).length > 0 && (
-                        <Text className="text-white font-semibold text-lg ml-1">
-                            Upcoming Events
-                        </Text>
-                    )}
-                    {upcomingEvents.map((event, index) => (
-                        <NextEvents
-                            key={index}
-                            date={new Date(event.date)}
-                            //@ts-ignore
-                            event={event.event}
-                        />
-                    ))}
                 </ThemedView>
             </ScrollView>
         );
