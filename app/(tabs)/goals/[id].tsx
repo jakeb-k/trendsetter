@@ -9,6 +9,10 @@ import { useEventsStore } from '@/stores/useEventStore';
 import { useGoalsStore } from '@/stores/useGoalStore';
 import Event from '@/types/models/Event';
 import EventFeedback from '@/types/models/EventFeedback';
+import {
+    calculateCurrentProgressForEvent,
+    calculateMaxProgressForGoal
+} from '@/utils/progressCalculator';
 import { calculateEventsForCurrentMonth } from '@/utils/scheduleHandler';
 import { Entypo } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -37,9 +41,16 @@ export default function GoalDetailLayout() {
 
     const goal = goals.find((goal) => goal.id.toString() === id)!;
 
-    const monthlyEvents = calculateEventsForCurrentMonth(events);
+    const maxProgressPoints = calculateMaxProgressForGoal(goal, events);
+    const currentProgressPoints = Object.values(goalFeedback).reduce(
+        (acc, feedback) => acc + calculateCurrentProgressForEvent(feedback),
+        0
+    );
 
-    const daysLeft = moment(goal.end_date).diff(moment(), 'days')
+    const completionPercentage = Number(((currentProgressPoints / maxProgressPoints)).toFixed(2))
+
+    const monthlyEvents = calculateEventsForCurrentMonth(events);
+    const daysLeft = moment(goal.end_date).diff(moment(), 'days');
 
     const upcomingEvents = useMemo(() => {
         const goalEventIDs = events
@@ -75,7 +86,7 @@ export default function GoalDetailLayout() {
             getGoalFeedbackHistory(id.toString())
                 .then((response) => {
                     setGoalFeedback(response.feedback);
-                    setIsLoading(false)
+                    setIsLoading(false);
                 })
                 .catch((err) => {
                     console.error(err);
@@ -103,7 +114,9 @@ export default function GoalDetailLayout() {
                                 className="font-bold text-2xl mt-4"
                                 title={goal.title}
                             />
-                            <Text className='font-bold text-xl font-satoshi text-lightprimary italic my-2'>{daysLeft} Days Left</Text>
+                            <Text className="font-bold text-xl font-satoshi text-lightprimary italic my-2">
+                                {daysLeft} Days Left
+                            </Text>
                         </View>
                     </View>
                     <Text className="font-satoshi text-white/70 italic text-base">
@@ -112,7 +125,7 @@ export default function GoalDetailLayout() {
                     <View className="my-8">
                         <ProgressWheel
                             size={150}
-                            progress={0.65}
+                            progress={completionPercentage}
                             label="Towards Goal"
                         />
                     </View>

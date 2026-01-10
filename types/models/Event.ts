@@ -1,5 +1,6 @@
 export default interface Event {
     latestLogDate?: string;
+    goal_id?: number | string, 
     id: number;
     title: string;
     description: string;
