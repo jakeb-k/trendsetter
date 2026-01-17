@@ -67,6 +67,7 @@ export default function EventForm({
         async function handleEventRequest() {
             storeEvent(newEvent)
                 .then((response) => {
+                    //@ts-ignore
                     setEvents([...events, response as Event]);
                     setSuccess();
                 })
