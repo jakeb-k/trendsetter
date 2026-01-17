@@ -4,6 +4,7 @@ import DateTimePicker, {
 } from '@react-native-community/datetimepicker';
 import { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import PrimaryButton from '../common/PrimaryButton';
 
 export default function CreateGoalForm() {
     const [newGoal, setNewGoal] = useState({
@@ -32,6 +33,11 @@ export default function CreateGoalForm() {
     const showDatepicker = () => {
         showMode('date');
     };
+
+    const handleNewGoalRequest = () => {
+        console.log('penis')
+    }
+
     return (
         <View className="flex flex-col space-y-2 my-4">
             <View>
@@ -63,7 +69,7 @@ export default function CreateGoalForm() {
                         <Text className="text-l font-satoshi text-white/50 flex-row items-center ">
                             Pick a deadline{' '}
                             <Entypo
-                            className='ml-2 mt-2'
+                                className="ml-2 mt-2"
                                 name="chevron-thin-right"
                                 size={16}
                                 color="rgba(255,255,255,0.5)"
@@ -81,6 +87,29 @@ export default function CreateGoalForm() {
                     />
                 )}
             </View>
+            <View className="mt-2 h-[1px] w-full bg-secondary" />
+            <View>
+                <Text className="text-lg font-satoshi text-white">
+                    Description
+                </Text>
+                <TextInput
+                    multiline={true}
+                    value={newGoal.description}
+                    textAlignVertical="top"
+                    placeholder="Add any notes..."
+                    placeholderTextColor="#ccc"
+                    style={{ minHeight: 140, maxHeight: 240 }}
+                    onChangeText={(text) =>
+                        setNewGoal({ ...newGoal, description: text })
+                    }
+                    className="bg-white/10 text-white px-4 py-3 backdrop-blur-xl rounded-xl mt-2 mb-4 mr-2"
+                />
+            </View>
+            <PrimaryButton onPress={handleNewGoalRequest}>
+                <Text className="font-satoshi text-center text-white font-bold text-lg ">
+                    Create Goal
+                </Text>
+            </PrimaryButton>
         </View>
     );
 }
