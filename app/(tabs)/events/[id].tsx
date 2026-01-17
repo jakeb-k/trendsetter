@@ -64,8 +64,6 @@ export default function EventDetailLayout() {
         getSelectedDate();
     }, []);
 
-    console.log(loggedDates)
-
     const requestEventFeedbackHistory = async (id: string) => {
         if (!id) return;
         return getEventFeedbackHistory(id.toString());
