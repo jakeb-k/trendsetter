@@ -20,7 +20,7 @@ export default function CreateGoalHeader() {
                 title={'Set a Goal'}
             />
             <Text className="text-white/50 font-satoshi font-semibold my-1 tracking-wide">
-                Make it real. No Vague Targets.
+                Make it real. No vague targets.
             </Text>
         </View>
     );

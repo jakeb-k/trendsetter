@@ -35,8 +35,8 @@ export default function CreateGoalForm() {
     };
 
     const handleNewGoalRequest = () => {
-        console.log('penis')
-    }
+        console.log('penis');
+    };
 
     return (
         <View className="flex flex-col space-y-2 my-4">
@@ -45,13 +45,16 @@ export default function CreateGoalForm() {
                 <TextInput
                     value={''}
                     textAlignVertical="top"
-                    placeholder="Enter Title..."
+                    placeholder="Name the mission"
                     placeholderTextColor="#ccc"
                     onChangeText={(text) =>
                         setNewGoal({ ...newGoal, title: text })
                     }
                     className="bg-white/10 text-white px-4 py-3 backdrop-blur-xl rounded-xl mt-2 mb-4 mr-2"
                 />
+                <Text className="text-white/50 font-satoshi my-1 tracking-wide">
+                    Be specific. Your future self reads this.
+                </Text>
             </View>
             <View className="mt-2 h-[1px] w-full bg-secondary" />
             <View>
@@ -89,14 +92,14 @@ export default function CreateGoalForm() {
             </View>
             <View className="mt-2 h-[1px] w-full bg-secondary" />
             <View>
-                <Text className="text-lg font-satoshi text-white">
-                    Description
+                <Text className="text-md font-satoshi text-white">
+                    Why this matters
                 </Text>
                 <TextInput
                     multiline={true}
                     value={newGoal.description}
                     textAlignVertical="top"
-                    placeholder="Add any notes..."
+                    placeholder="Outcome, purpose, stakes..."
                     placeholderTextColor="#ccc"
                     style={{ minHeight: 140, maxHeight: 240 }}
                     onChangeText={(text) =>
