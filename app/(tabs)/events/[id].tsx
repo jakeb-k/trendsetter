@@ -20,17 +20,18 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+
 const testStreak = [
-  "2026-01-17",
-  "2026-01-16",
-  "2026-01-15",
-  "2026-01-14",
-  "2026-01-13",
-  "2026-01-10",
-  "2026-01-09",
-  "2026-01-08",
-  "2026-01-07"
-]
+    '2026-01-17',
+    '2026-01-16',
+    '2026-01-15',
+    '2026-01-14',
+    '2026-01-13',
+    '2026-01-10',
+    '2026-01-09',
+    '2026-01-08',
+    '2026-01-07',
+];
 
 export default function EventDetailLayout() {
     const { id } = useLocalSearchParams();
@@ -43,7 +44,7 @@ export default function EventDetailLayout() {
     const [success, setSuccess] = useState(false);
     const [isLogging, setIsLogging] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-
+    const [streak, setStreak] = useState<number | null>(null);
     const opacity = useRef(new Animated.Value(0)).current;
     const scale = useRef(new Animated.Value(0.9)).current;
 
@@ -76,7 +77,9 @@ export default function EventDetailLayout() {
 
     useEffect(() => {
         if (event && loggedDates.length > 0) {
-            computeDateRangeFromEventStart(event, testStreak, events);
+            setStreak(
+                computeDateRangeFromEventStart(event, testStreak, events),
+            );
         }
     }, [loggedDates]);
 
@@ -135,9 +138,11 @@ export default function EventDetailLayout() {
                             {moment(date).format('ddd MMM Do')}
                         </Text>
                         {/* @todo use real data */}
-                        <Text className="rounded-lg bg-lightprimary text-white px-2 py-1 font-semibold font-satoshi italic shadow-md shadow-primary">
-                            7 STREAK
-                        </Text>
+                        {streak && (
+                            <Text className="rounded-lg bg-lightprimary text-white px-2 py-1 font-semibold font-satoshi italic shadow-md shadow-primary">
+                                {streak} STREAK
+                            </Text>
+                        )}
                     </View>
                     <View className="mb-6">
                         <Text className="text-white text-lg font-satoshi font-bold mt-6">
