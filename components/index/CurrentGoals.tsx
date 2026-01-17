@@ -1,6 +1,6 @@
 import Goal from '@/types/models/Goal';
 import { calculateCompletionPercentage } from '@/utils/scheduleHandler';
-import { Href, router } from 'expo-router';
+import { Href, Link, router } from 'expo-router';
 import moment from 'moment';
 import { Text, TouchableOpacity, View } from 'react-native';
 
@@ -11,11 +11,12 @@ export default function CurrentGoals({ goals }: { goals: Goal[] }) {
                 <Text className="text-[#F5F5F5] font-semibold text-lg ml-1">
                     Current Goals
                 </Text>
-                <TouchableOpacity className="rounded-lg bg-primary px-2 py-1">
+                {/* @ts-ignore */}
+                <Link href={"/create-goal"} className="rounded-lg bg-primary px-2 py-1">
                     <Text className="text-white font-semibold font-satoshio">
                         ADD NEW
                     </Text>
-                </TouchableOpacity>
+                </Link>
             </View>
             {goals.length > 0 ? (
                 goals.map((goal: Goal) => (
