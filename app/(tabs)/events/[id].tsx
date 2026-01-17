@@ -21,17 +21,17 @@ import {
     View,
 } from 'react-native';
 
-const testStreak = [
-    '2026-01-17',
-    '2026-01-16',
-    '2026-01-15',
-    '2026-01-14',
-    '2026-01-13',
-    '2026-01-10',
-    '2026-01-09',
-    '2026-01-08',
-    '2026-01-07',
-];
+// const testStreak = [
+//     '2026-01-17',
+//     '2026-01-16',
+//     '2026-01-15',
+//     '2026-01-14',
+//     '2026-01-13',
+//     '2026-01-10',
+//     '2026-01-09',
+//     '2026-01-08',
+//     '2026-01-07',
+// ];
 
 export default function EventDetailLayout() {
     const { id } = useLocalSearchParams();
@@ -78,7 +78,7 @@ export default function EventDetailLayout() {
     useEffect(() => {
         if (event && loggedDates.length > 0) {
             setStreak(
-                computeDateRangeFromEventStart(event, testStreak, events),
+                computeDateRangeFromEventStart(event, loggedDates, events),
             );
         }
     }, [loggedDates]);
