@@ -27,7 +27,8 @@ export default function EventDetailLayout() {
         events.find((event) => event.id.toString() === id)
     );
     const [eventFeedback, setEventFeedback] = useState<EventFeedback[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [loggedDates, setLoggedDates] = useState<string[]>([] as string[])
+    const [isLoading, setIsLoading] = useState(true); 
     const [success, setSuccess] = useState(false);
     const [isLogging, setIsLogging] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -46,8 +47,13 @@ export default function EventDetailLayout() {
             if (!id) return;
             const data = await requestEventFeedbackHistory(id.toString());
             if (data) {
-                //console.log(data);
+                console.log(data);
                 setEventFeedback(data.feedback);
+                setLoggedDates(() => {
+                    return data.feedback.map((feedback: EventFeedback) => {
+                        return feedback.created_at
+                    })
+                })
                 setIsLoading(false);
             } else {
                 console.error('Failed to fetch event feedback');
@@ -57,6 +63,8 @@ export default function EventDetailLayout() {
         waitForEventFeedback();
         getSelectedDate();
     }, []);
+
+    console.log(loggedDates)
 
     const requestEventFeedbackHistory = async (id: string) => {
         if (!id) return;
