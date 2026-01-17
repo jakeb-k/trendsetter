@@ -5,12 +5,18 @@ import moment from 'moment';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 export default function CurrentGoals({ goals }: { goals: Goal[] }) {
-
     return (
-        <View className="mb-2">
-            <Text className="text-[#F5F5F5] font-semibold text-lg ml-1">
-                Current Goals
-            </Text>
+        <View className="my-2">
+            <View className="flex flex-row justify-between">
+                <Text className="text-[#F5F5F5] font-semibold text-lg ml-1">
+                    Current Goals
+                </Text>
+                <TouchableOpacity className="rounded-lg bg-primary px-2 py-1">
+                    <Text className="text-white font-semibold font-satoshio">
+                        ADD NEW
+                    </Text>
+                </TouchableOpacity>
+            </View>
             {goals.length > 0 ? (
                 goals.map((goal: Goal) => (
                     <TouchableOpacity
@@ -40,15 +46,13 @@ export default function CurrentGoals({ goals }: { goals: Goal[] }) {
                                 style={{
                                     width: `${calculateCompletionPercentage(
                                         goal.start_date,
-                                        goal.end_date
+                                        goal.end_date,
                                     )}%`,
                                 }}
                             ></View>
                         </View>
                         <View className="flex flex-row justify-between">
-                            <Text className="text-lightprimary font-semibold text-base">
-                                
-                            </Text>
+                            <Text className="text-lightprimary font-semibold text-base"></Text>
                             <Text className="text-lightprimary font-semibold text-base">
                                 225 points
                             </Text>
