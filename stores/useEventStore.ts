@@ -13,6 +13,7 @@ interface Event {
     };
     scheduled_for: Date;
     completed_at: Date | null;
+    created_at: Date;
     points: number;
 }
 

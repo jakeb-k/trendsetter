@@ -1,24 +1,36 @@
-type DayKey = string; // e.g. "2026-01-10"
+import type { EventDate } from '@/types/models/Event';
+import Event from '@/types/models/Event';
+import moment from 'moment';
+import { calculateEventsForCurrentMonth } from './scheduleHandler';
 
-export function computeStreak(
-    actualDays: DayKey[],
-    expectedDays: DayKey[],
-): number {
-    if (expectedDays.length === 0) return 0;
+export function computeDateRangeFromEventStart(
+    event: Event,
+    loggedDates: string[],
+    events: Event[],
+) {
+    let scheduledDates = calculateEventsForCurrentMonth(events)
+        .filter(
+            (eventDate: EventDate) =>
+                eventDate.eventID == event.id &&
+                moment(eventDate.date).isSameOrBefore(moment(), 'day'),
+        )
+        .reverse()
+        .map((eventDate: EventDate) => {
+            return eventDate.date;
+        });
 
-    const actualSet = new Set(actualDays);
+    const loggedSet = new Set(loggedDates);
+    const isToday = (date: string) => moment(date).isSame(moment(), 'day');
 
     let streak = 0;
 
-    // walk backwards from the most recent expected day
-    for (let i = expectedDays.length - 1; i >= 0; i--) {
-        const day = expectedDays[i];
+    for (let i = 0; i < scheduledDates.length; i++) {
+        const date = scheduledDates[i];
 
-        if (actualSet.has(day)) {
-            streak++;
-        } else {
-            break;
-        }
+        if (i === 0 && isToday(date) && !loggedSet.has(date)) continue; // don’t kill streak on today
+
+        if (!loggedSet.has(date)) break;
+        streak++;
     }
 
     return streak;
