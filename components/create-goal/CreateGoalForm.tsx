@@ -7,6 +7,7 @@ import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import PrimaryButton from '../common/PrimaryButton';
 
 export default function CreateGoalForm() {
+    //@todo - set date to null to have actual validation
     const [newGoal, setNewGoal] = useState({
         title: '',
         end_date: new Date(),
@@ -14,6 +15,7 @@ export default function CreateGoalForm() {
     });
     const [mode, setMode] = useState<any>('date');
     const [show, setShow] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     //@todo fix this
     const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
@@ -35,7 +37,42 @@ export default function CreateGoalForm() {
     };
 
     const handleNewGoalRequest = () => {
-        console.log('penis');
+        const error = validateGoal();
+        if (error) {
+            setError(error);
+            return;
+        } else {
+            setError(null)
+        }
+    };
+
+    const validateGoal = () => {
+        let error = '';
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (!newGoal.title.trim()) {
+            return 'You gotta name the mission.';
+        }
+
+        if (newGoal.title.length > 80) {
+            return 'That title’s doing too much. Shorten it.';
+        }
+
+        if (!newGoal.description.trim()) {
+            return 'Why does this matter? Give it a reason.';
+        }
+
+        if (!newGoal.end_date) {
+            return 'Deadlines matter. Pick one.';
+        } else {
+            const endDate = new Date(newGoal.end_date);
+            endDate.setHours(0, 0, 0, 0);
+
+            if (endDate < today) {
+                return 'Unless you’ve got a time machine, pick a future date.';
+            }
+        }
     };
 
     return (
@@ -43,7 +80,7 @@ export default function CreateGoalForm() {
             <View>
                 <Text className="text-md font-satoshi text-white">Title</Text>
                 <TextInput
-                    value={''}
+                    value={newGoal.title}
                     textAlignVertical="top"
                     placeholder="Name the mission"
                     placeholderTextColor="#ccc"
@@ -109,10 +146,18 @@ export default function CreateGoalForm() {
                 />
             </View>
             <PrimaryButton onPress={handleNewGoalRequest}>
-                <Text className="font-satoshi text-center text-white font-bold text-lg ">
+                <Text className="font-satoshi text-center text-white font-bold text-lg">
                     Create Goal
                 </Text>
             </PrimaryButton>
+            <View className="mt-12"></View>
+            {error && (
+                <View className="rounded-xl backdrop-blur-xl bg-red-200/20 mt-4 p-4">
+                    <Text className="text-red-600 text-center font-satoshi text-lg font-bold">
+                        {error}
+                    </Text>
+                </View>
+            )}
         </View>
     );
 }
