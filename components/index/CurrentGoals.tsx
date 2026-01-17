@@ -5,6 +5,7 @@ import moment from 'moment';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 export default function CurrentGoals({ goals }: { goals: Goal[] }) {
+
     return (
         <View className="mb-2">
             <Text className="text-[#F5F5F5] font-semibold text-lg ml-1">
@@ -46,7 +47,7 @@ export default function CurrentGoals({ goals }: { goals: Goal[] }) {
                         </View>
                         <View className="flex flex-row justify-between">
                             <Text className="text-lightprimary font-semibold text-base">
-                                5-day streak
+                                
                             </Text>
                             <Text className="text-lightprimary font-semibold text-base">
                                 225 points

@@ -5,7 +5,9 @@ import EventFeedbackForm from '@/components/events/EventFeedbackForm';
 import EventFeedbackInfo from '@/components/events/EventFeedbackInfo';
 import { ThemedView } from '@/components/ThemedView';
 import { useEventsStore } from '@/stores/useEventStore';
+import Event from '@/types/models/Event';
 import EventFeedback from '@/types/models/EventFeedback';
+import { computeDateRangeFromEventStart } from '@/utils/streakCalculator';
 import { AntDesign, Entypo } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -19,19 +21,30 @@ import {
     View,
 } from 'react-native';
 
+const testStreak = [
+    '2026-01-17',
+    '2026-01-16',
+    '2026-01-15',
+    '2026-01-14',
+    '2026-01-13',
+    '2026-01-10',
+    '2026-01-09',
+    '2026-01-08',
+    '2026-01-07',
+];
+
 export default function EventDetailLayout() {
     const { id } = useLocalSearchParams();
     const { events, setEvents } = useEventsStore();
     const [date, setDate] = useState(null);
-    const [event, setEvent] = useState(() =>
-        events.find((event) => event.id.toString() === id)
-    );
+    const event = events.find((event: Event) => event.id.toString() === id);
     const [eventFeedback, setEventFeedback] = useState<EventFeedback[]>([]);
+    const [loggedDates, setLoggedDates] = useState<string[]>([] as string[]);
     const [isLoading, setIsLoading] = useState(true);
     const [success, setSuccess] = useState(false);
     const [isLogging, setIsLogging] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-
+    const [streak, setStreak] = useState<number | null>(null);
     const opacity = useRef(new Animated.Value(0)).current;
     const scale = useRef(new Animated.Value(0.9)).current;
 
@@ -46,8 +59,12 @@ export default function EventDetailLayout() {
             if (!id) return;
             const data = await requestEventFeedbackHistory(id.toString());
             if (data) {
-                //console.log(data);
                 setEventFeedback(data.feedback);
+                setLoggedDates(() => {
+                    return data.feedback.map((feedback: EventFeedback) => {
+                        return moment(feedback.created_at).format('YYYY-MM-DD');
+                    });
+                });
                 setIsLoading(false);
             } else {
                 console.error('Failed to fetch event feedback');
@@ -57,6 +74,14 @@ export default function EventDetailLayout() {
         waitForEventFeedback();
         getSelectedDate();
     }, []);
+
+    useEffect(() => {
+        if (event && loggedDates.length > 0) {
+            setStreak(
+                computeDateRangeFromEventStart(event, testStreak, events),
+            );
+        }
+    }, [loggedDates]);
 
     const requestEventFeedbackHistory = async (id: string) => {
         if (!id) return;
@@ -82,7 +107,9 @@ export default function EventDetailLayout() {
 
     const setEventLogged = () => {
         const updatedEvents = events.map((event) =>
-            event.id.toString() === id ? { ...event, latestLogDate: moment().format('YYYY-MM-DD')} : event
+            event.id.toString() === id
+                ? { ...event, latestLogDate: moment().format('YYYY-MM-DD') }
+                : event,
         );
         setEvents(updatedEvents);
     };
@@ -111,9 +138,11 @@ export default function EventDetailLayout() {
                             {moment(date).format('ddd MMM Do')}
                         </Text>
                         {/* @todo use real data */}
-                        <Text className="rounded-lg bg-lightprimary text-white px-2 py-1 font-semibold font-satoshi italic shadow-md shadow-primary">
-                            7 STREAK
-                        </Text>
+                        {streak && (
+                            <Text className="rounded-lg bg-lightprimary text-white px-2 py-1 font-semibold font-satoshi italic shadow-md shadow-primary">
+                                {streak} STREAK
+                            </Text>
+                        )}
                     </View>
                     <View className="mb-6">
                         <Text className="text-white text-lg font-satoshi font-bold mt-6">
@@ -137,10 +166,11 @@ export default function EventDetailLayout() {
                                             const filtered =
                                                 existingEvents.filter(
                                                     (event: EventFeedback) =>
-                                                        event.id !== newEvent.id
+                                                        event.id !==
+                                                        newEvent.id,
                                                 );
                                             return [newEvent, ...filtered];
-                                        }
+                                        },
                                     );
                                     setEventLogged();
                                     setSuccess(true);
@@ -168,8 +198,8 @@ export default function EventDetailLayout() {
                                     ? 'Saving'
                                     : 'Save'
                                 : success
-                                ? 'Saved'
-                                : 'Log Progress'}
+                                  ? 'Saved'
+                                  : 'Log Progress'}
                         </Text>
                         {isSubmitting && (
                             <View className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin ml-4 absolute left-[57.5%] mt-1" />
