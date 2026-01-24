@@ -1,4 +1,5 @@
 import { storeGoal } from '@/api/goalsApi';
+import { useGoalsStore } from '@/stores/useGoalStore';
 import Entypo from '@expo/vector-icons/Entypo';
 import DateTimePicker, {
     DateTimePickerEvent,
@@ -12,6 +13,8 @@ type Props = {
 };
 
 export default function CreateGoalForm({ setSuccess }: Props) {
+    const { updateGoals } = useGoalsStore();
+
     //@todo - set date to null to have actual validation
     const [newGoal, setNewGoal] = useState({
         title: '',
@@ -21,7 +24,8 @@ export default function CreateGoalForm({ setSuccess }: Props) {
     const [mode, setMode] = useState<any>('date');
     const [show, setShow] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false); 
+    const [loading, setLoading] = useState(false);
+
     //@todo fix this
     const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
         const currentDate = selectedDate;
@@ -42,25 +46,25 @@ export default function CreateGoalForm({ setSuccess }: Props) {
     };
 
     const validateNewGoalRequest = async () => {
-        setLoading(true)
+        setLoading(true);
         const error = validateGoal();
         if (error) {
             setError(error);
         } else {
-            await handleNewGoalRequest(); 
-            setError(null);
+            await handleNewGoalRequest();
         }
         setLoading(false);
     };
-    
+
     async function handleNewGoalRequest() {
         storeGoal(newGoal)
             .then((response) => {
-                // setGoals([...events, response as Goal]);
+                updateGoals(response.goal);
+                setError(null);
                 setSuccess();
             })
             .catch((error) => {
-                setError("Unable to create goal, try again in a few seconds!");
+                setError('Unable to create goal, try again in a few seconds!');
                 console.error(error);
             });
     }
@@ -70,7 +74,7 @@ export default function CreateGoalForm({ setSuccess }: Props) {
         today.setHours(0, 0, 0, 0);
 
         if (!newGoal.title.trim()) {
-            return "You gotta name the mission.";
+            return 'You gotta name the mission.';
         }
 
         if (newGoal.title.length > 80) {
@@ -78,10 +82,10 @@ export default function CreateGoalForm({ setSuccess }: Props) {
         }
 
         if (!newGoal.description.trim()) {
-            return "Why does this matter? Give it a reason.";
+            return 'Why does this matter? Give it a reason.';
         }
         if (!newGoal.end_date) {
-            return "Deadlines matter. Pick one.";
+            return 'Deadlines matter. Pick one.';
         } else {
             const endDate = new Date(newGoal.end_date);
             endDate.setHours(0, 0, 0, 0);
