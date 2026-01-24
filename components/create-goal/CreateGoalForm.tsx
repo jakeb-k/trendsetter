@@ -60,35 +60,34 @@ export default function CreateGoalForm({ setSuccess }: Props) {
                 setSuccess();
             })
             .catch((error) => {
-                setError('Unable to create goal, try again in a few seconds!');
+                setError("Unable to create goal, try again in a few seconds!");
                 console.error(error);
             });
     }
 
     const validateGoal = () => {
-        let error = '';
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
         if (!newGoal.title.trim()) {
-            return 'You gotta name the mission.';
+            return "You gotta name the mission.";
         }
 
         if (newGoal.title.length > 80) {
-            return 'That title’s doing too much. Shorten it.';
+            return "That title's doing too much. Shorten it.";
         }
 
         if (!newGoal.description.trim()) {
-            return 'Why does this matter? Give it a reason.';
+            return "Why does this matter? Give it a reason.";
         }
         if (!newGoal.end_date) {
-            return 'Deadlines matter. Pick one.';
+            return "Deadlines matter. Pick one.";
         } else {
             const endDate = new Date(newGoal.end_date);
             endDate.setHours(0, 0, 0, 0);
 
             if (endDate < today) {
-                return 'Unless you’ve got a time machine, pick a future date.';
+                return "Unless you've got a time machine, pick a future date.";
             }
         }
     };

@@ -6,6 +6,7 @@ import { create } from 'zustand';
 interface GoalsStore {
     goals: Goal[];
     setGoals: (newGoals: Goal[]) => void;
+    updateGoals: (newGoal: Goal) => void;
 }
 
 export const useGoalsStore = create<GoalsStore>()(
@@ -13,10 +14,14 @@ export const useGoalsStore = create<GoalsStore>()(
         (set) => ({
             goals: [],
             setGoals: (newGoals) => set({ goals: newGoals }),
+            updateGoals: (newGoal) =>
+                set((state) => ({
+                    goals: [...state.goals, newGoal],
+                })),
         }),
         {
             name: 'Goals-storage',
             storage: createJSONStorage(() => AsyncStorage),
-        }
-    )
+        },
+    ),
 );
