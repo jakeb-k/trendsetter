@@ -1,3 +1,4 @@
+import { storeGoal } from '@/api/goalsApi';
 import Entypo from '@expo/vector-icons/Entypo';
 import DateTimePicker, {
     DateTimePickerEvent,
@@ -6,7 +7,11 @@ import { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import PrimaryButton from '../common/PrimaryButton';
 
-export default function CreateGoalForm() {
+type Props = {
+    setSuccess: () => void;
+};
+
+export default function CreateGoalForm({ setSuccess }: Props) {
     //@todo - set date to null to have actual validation
     const [newGoal, setNewGoal] = useState({
         title: '',
@@ -16,7 +21,7 @@ export default function CreateGoalForm() {
     const [mode, setMode] = useState<any>('date');
     const [show, setShow] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
+    const [loading, setLoading] = useState(false); 
     //@todo fix this
     const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
         const currentDate = selectedDate;
@@ -36,15 +41,29 @@ export default function CreateGoalForm() {
         showMode('date');
     };
 
-    const handleNewGoalRequest = () => {
+    const validateNewGoalRequest = async () => {
+        setLoading(true)
         const error = validateGoal();
         if (error) {
             setError(error);
-            return;
         } else {
-            setError(null)
+            await handleNewGoalRequest(); 
+            setError(null);
         }
+        setLoading(false);
     };
+    
+    async function handleNewGoalRequest() {
+        storeGoal(newGoal)
+            .then((response) => {
+                // setGoals([...events, response as Goal]);
+                setSuccess();
+            })
+            .catch((error) => {
+                setError('Unable to create goal, try again in a few seconds!');
+                console.error(error);
+            });
+    }
 
     const validateGoal = () => {
         let error = '';
@@ -62,7 +81,6 @@ export default function CreateGoalForm() {
         if (!newGoal.description.trim()) {
             return 'Why does this matter? Give it a reason.';
         }
-
         if (!newGoal.end_date) {
             return 'Deadlines matter. Pick one.';
         } else {
@@ -145,7 +163,7 @@ export default function CreateGoalForm() {
                     className="bg-white/10 text-white px-4 py-3 backdrop-blur-xl rounded-xl mt-2 mb-4 mr-2"
                 />
             </View>
-            <PrimaryButton onPress={handleNewGoalRequest}>
+            <PrimaryButton onPress={validateNewGoalRequest}>
                 <Text className="font-satoshi text-center text-white font-bold text-lg">
                     Create Goal
                 </Text>
