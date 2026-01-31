@@ -1,8 +1,8 @@
+import ProgressWheel from '@/components/common/ProgressWheel';
 import { emojiConverter, statusConverter } from '@/utils/textConverters';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import React from 'react';
 import { Text, View } from 'react-native';
-
 type StatusCounts = Record<string, number>;
 type MoodCounts = Record<string, number>;
 
@@ -22,7 +22,12 @@ type Props = {
 export default function StatsSummary({ stats }: Props) {
     return (
         <View className="mt-6 rounded-xl bg-white/10 p-4">
-            <Text className="text-white font-satoshi text-lg font-bold">
+            <ProgressWheel
+                size={150}
+                progress={stats.points_earned! / stats.max_possible_points!}
+                label="Goal Progress"
+            />
+            <Text className="text-white font-satoshi text-lg font-bold mt-4">
                 Stats Summary
             </Text>
 
@@ -38,7 +43,9 @@ export default function StatsSummary({ stats }: Props) {
             <Text className="text-white/60 font-satoshi text-sm mt-1">
                 Reasons:{' '}
                 {(stats.completion_reasons?.length ?? 0) > 0
-                    ? stats.completion_reasons!.join(', ')
+                    ? stats
+                          .completion_reasons!.map((r) => r.replace(/_/g, ' '))
+                          .join(', ')
                     : '—'}
             </Text>
 

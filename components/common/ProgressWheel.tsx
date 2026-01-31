@@ -71,7 +71,7 @@ const GoalProgressWheel = ({
             </Svg>
             <View className="absolute items-center justify-center">
                 <Text className="text-white text-3xl">
-                    {(progress * 100).toFixed(2)}%
+                    {(progress * 100).toFixed(0)}%
                 </Text>
                 {label && (
                     <Text className="text-md font-satoshi_italic text-white/60 mt-1">
