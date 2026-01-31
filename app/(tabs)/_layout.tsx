@@ -114,6 +114,12 @@ export default function TabLayout() {
                     href: null,
                 }}
             />
+            <Tabs.Screen
+                name="completed-goals"
+                options={{
+                    href: null,
+                }}
+            />
         </Tabs>
     );
 }

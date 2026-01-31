@@ -1,5 +1,6 @@
 import Config from '@/constants/Config';
 import { GoalRequest } from '@/types/requests/GoalsRequest';
+import GoalReviewRequest from '@/types/requests/GoalReviewRequest';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import axios from 'axios';
@@ -64,6 +65,92 @@ export async function storeGoal(
         return res.data;
     } catch (err) {
         console.error('Goal create request failed:', err);
+        return { error: true, message: err || 'Unknown error' };
+    }
+}
+
+export async function completeGoal(
+    goalId: number,
+    payload?: { completion_reasons?: string[] }
+) {
+    try {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+            router.navigate('/login');
+        }
+        const res = await axios.post(
+            `${Config.API_URL}/goals/${goalId}/complete`,
+            payload ?? {},
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            },
+        );
+        return res.data;
+    } catch (err) {
+        console.error('Goal completion request failed:', err);
+        return { error: true, message: err || 'Unknown error' };
+    }
+}
+
+export async function createGoalReview(
+    goalId: number,
+    payload: GoalReviewRequest
+) {
+    try {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+            router.navigate('/login');
+        }
+        const res = await axios.post(
+            `${Config.API_URL}/goals/${goalId}/review`,
+            payload,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            },
+        );
+        return res.data;
+    } catch (err) {
+        console.error('Goal review request failed:', err);
+        return { error: true, message: err || 'Unknown error' };
+    }
+}
+
+export async function fetchCompletedGoals() {
+    try {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+            router.navigate('/login');
+        }
+        const res = await axios.get(`${Config.API_URL}/goals/completed`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return res.data;
+    } catch (err) {
+        console.error('Completed goals request failed:', err);
+        return { error: true, message: err || 'Unknown error' };
+    }
+}
+
+export async function fetchGoalReview(goalId: number) {
+    try {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+            router.navigate('/login');
+        }
+        const res = await axios.get(`${Config.API_URL}/goals/${goalId}/review`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return res.data;
+    } catch (err) {
+        console.error('Goal review fetch failed:', err);
         return { error: true, message: err || 'Unknown error' };
     }
 }

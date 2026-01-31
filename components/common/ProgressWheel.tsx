@@ -36,7 +36,7 @@ const GoalProgressWheel = ({
                 duration: 1000,
                 easing: Easing.out(Easing.exp),
             });
-        }, [progress])
+        }, [progress]),
     );
 
     const animatedProps = useAnimatedProps(() => ({
@@ -71,10 +71,12 @@ const GoalProgressWheel = ({
             </Svg>
             <View className="absolute items-center justify-center">
                 <Text className="text-white text-3xl">
-                    {Math.round(progress * 100)}%
+                    {(progress * 100).toFixed(0)}%
                 </Text>
                 {label && (
-                    <Text className="text-md font-satoshi_italic text-white/60 mt-1">{label}</Text>
+                    <Text className="text-md font-satoshi_italic text-white/60 mt-1">
+                        {label}
+                    </Text>
                 )}
             </View>
         </View>

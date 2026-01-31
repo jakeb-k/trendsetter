@@ -9,6 +9,12 @@ export default function EventLayout() {
                     headerShown: false, 
                 }}
             />
+            <Stack.Screen
+                name="[id]/review-goal"
+                options={{
+                    headerShown: false,
+                }}
+            />
         </Stack>
     );
 }

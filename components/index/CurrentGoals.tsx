@@ -5,21 +5,36 @@ import moment from 'moment';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 export default function CurrentGoals({ goals }: { goals: Goal[] }) {
+    const activeGoals = goals.filter((goal) => goal.status !== 'completed');
     return (
         <View className="my-2">
             <View className="flex flex-row justify-between">
                 <Text className="text-[#F5F5F5] font-semibold text-lg ml-1">
                     Current Goals
                 </Text>
-                {/* @ts-ignore */}
-                <Link href={"/create-goal"} className="rounded-lg bg-primary px-2 py-1">
-                    <Text className="text-white font-semibold font-satoshio">
-                        ADD NEW
-                    </Text>
-                </Link>
+                <View className="flex flex-row space-x-2">
+                    {/* @ts-ignore */}
+                    <Link
+                        href={'/completed-goals'}
+                        className="rounded-lg bg-white/10 px-2 py-1"
+                    >
+                        <Text className="text-white font-semibold font-satoshi">
+                            COMPLETED
+                        </Text>
+                    </Link>
+                    {/* @ts-ignore */}
+                    <Link
+                        href={'/create-goal'}
+                        className="rounded-lg bg-primary px-2 py-1"
+                    >
+                        <Text className="text-white font-semibold font-satoshi">
+                            ADD NEW
+                        </Text>
+                    </Link>
+                </View>
             </View>
-            {goals.length > 0 ? (
-                goals.map((goal: Goal) => (
+            {activeGoals.length > 0 ? (
+                activeGoals.map((goal: Goal) => (
                     <TouchableOpacity
                         key={goal.id}
                         onPress={() => {

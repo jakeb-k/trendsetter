@@ -1,4 +1,4 @@
-import { getGoalFeedbackHistory } from '@/api/goalsApi';
+import { completeGoal, getGoalFeedbackHistory } from '@/api/goalsApi';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import ProgressWheel from '@/components/common/ProgressWheel';
 import TitleText from '@/components/common/TitleText';
@@ -9,10 +9,7 @@ import { useEventsStore } from '@/stores/useEventStore';
 import { useGoalsStore } from '@/stores/useGoalStore';
 import Event from '@/types/models/Event';
 import EventFeedback from '@/types/models/EventFeedback';
-import {
-    calculateCurrentProgressForEvent,
-    calculateMaxProgressForGoal
-} from '@/utils/progressCalculator';
+import { calculateCompletionStats } from '@/utils/progressCalculator';
 import { calculateEventsForCurrentMonth } from '@/utils/scheduleHandler';
 import { Entypo } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -32,25 +29,40 @@ interface GoalFeedback {
 
 export default function GoalDetailLayout() {
     const { id } = useLocalSearchParams();
-    const { goals } = useGoalsStore();
+    const { goals, replaceGoal } = useGoalsStore();
     const { events } = useEventsStore();
     const [isLoading, setIsLoading] = useState(true);
     const [goalFeedback, setGoalFeedback] = useState<GoalFeedback>(
-        {} as GoalFeedback
+        {} as GoalFeedback,
     );
+    const [completionError, setCompletionError] = useState<string | null>(null);
+    const [isCompleting, setIsCompleting] = useState(false);
 
     const goal = goals.find((goal) => goal.id.toString() === id)!;
 
-    const maxProgressPoints = calculateMaxProgressForGoal(goal, events);
-    const currentProgressPoints = Object.values(goalFeedback).reduce(
-        (acc, feedback) => acc + calculateCurrentProgressForEvent(feedback),
-        0
+    const computedStats = calculateCompletionStats(goal, events, goalFeedback);
+    const pointsEarned = computedStats.pointsEarned;
+    const maxPossiblePoints = computedStats.maxPossiblePoints;
+    const completionPercentage = Number(
+        maxPossiblePoints > 0 ? pointsEarned / maxPossiblePoints : 0,
     );
-
-    const completionPercentage = Number(((currentProgressPoints / maxProgressPoints)).toFixed(2))
 
     const monthlyEvents = calculateEventsForCurrentMonth(events);
     const daysLeft = moment(goal.end_date).diff(moment(), 'days');
+    const isCompleted = goal.status === 'completed' || !!goal.completed_at;
+    const isCompletable = computedStats.isCompletable && !isCompleted;
+    const completionReasonText = computedStats.completionReasons
+        .map((reason) => {
+            if (reason === 'points_threshold') {
+                return 'You hit 75% of your target points.';
+            }
+            if (reason === 'end_date_passed') {
+                return 'Your goal period has ended.';
+            }
+            return null;
+        })
+        .filter(Boolean)
+        .join(' ');
 
     const upcomingEvents = useMemo(() => {
         const goalEventIDs = events
@@ -62,8 +74,8 @@ export default function GoalDetailLayout() {
                 .filter(
                     (event) =>
                         moment(event.date).isAfter(
-                            moment().format('YYYY-MM-DD')
-                        ) && event.eventID === eventID
+                            moment().format('YYYY-MM-DD'),
+                        ) && event.eventID === eventID,
                 )
                 .slice(0, 3);
 
@@ -72,7 +84,7 @@ export default function GoalDetailLayout() {
                     upcomingEvents.push({
                         ...latestEvent,
                         event: events.find(
-                            (event) => event.id === latestEvent.eventID
+                            (event) => event.id === latestEvent.eventID,
                         )!,
                     });
                 });
@@ -93,7 +105,37 @@ export default function GoalDetailLayout() {
                 });
         };
         fetchGoalFeedback();
-    }, []);
+    }, [events]);
+
+    useEffect(() => {
+        replaceGoal({
+            ...goal,
+            points_earned: computedStats.pointsEarned,
+            max_possible_points: computedStats.maxPossiblePoints,
+            threshold_points: computedStats.thresholdPoints,
+            is_completable: computedStats.isCompletable,
+            completion_reasons: computedStats.completionReasons,
+        });
+    }, [goalFeedback, events]);
+
+    const handleCompleteGoal = async () => {
+        if (isCompleting) return;
+        setIsCompleting(true);
+        setCompletionError(null);
+        const response = await completeGoal(goal.id, {
+            completion_reasons: computedStats.completionReasons,
+        });
+        if (!response?.error && response?.goal) {
+            replaceGoal(response.goal);
+            router.push({
+                pathname: '/goals/[id]/review-goal',
+                params: { id: String(goal.id) },
+            });
+        } else {
+            setCompletionError('This goal is not eligible to complete yet.');
+        }
+        setIsCompleting(false);
+    };
 
     if (goal) {
         return (
@@ -115,7 +157,9 @@ export default function GoalDetailLayout() {
                                 title={goal.title}
                             />
                             <Text className="font-bold text-xl font-satoshi text-lightprimary italic my-2">
-                                {daysLeft} Days Left
+                                {isCompleted
+                                    ? 'Completed'
+                                    : `${daysLeft} Days Left`}
                             </Text>
                         </View>
                     </View>
@@ -128,12 +172,53 @@ export default function GoalDetailLayout() {
                             progress={completionPercentage}
                             label="Towards Goal"
                         />
+                        <View className="mt-4">
+                            <Text className="text-white/80 text-base font-satoshi text-center">
+                                {pointsEarned} / {maxPossiblePoints} points
+                            </Text>
+                            <Text className="text-white/60 text-sm font-satoshi text-center mt-1">
+                                Threshold: {goal.threshold_points ?? 0}
+                            </Text>
+                        </View>
                     </View>
-                    <PrimaryButton onPress={() => {}}>
-                        <Text className="text-white text-center font-satoshi text-lg font-bold">
-                            Complete Goal
-                        </Text>
-                    </PrimaryButton>
+                    {isCompletable && (
+                        <>
+                            <PrimaryButton onPress={handleCompleteGoal}>
+                                <Text className="text-white text-center font-satoshi text-lg font-bold">
+                                    {isCompleting
+                                        ? 'Completing...'
+                                        : 'Complete Goal'}
+                                </Text>
+                            </PrimaryButton>
+                            {completionReasonText && (
+                                <Text className="text-white/70 text-sm font-satoshi text-center mt-2">
+                                    {completionReasonText}
+                                </Text>
+                            )}
+                        </>
+                    )}
+                    {isCompleted && (
+                        <PrimaryButton
+                            className="mt-2"
+                            onPress={() =>
+                                router.push({
+                                    pathname: '/goals/[id]/review-goal',
+                                    params: { id: String(goal.id) },
+                                })
+                            }
+                        >
+                            <Text className="text-white text-center font-satoshi text-lg font-bold">
+                                View Review
+                            </Text>
+                        </PrimaryButton>
+                    )}
+                    {completionError && (
+                        <View className="rounded-xl backdrop-blur-xl bg-red-200/20 mt-4 p-4">
+                            <Text className="text-red-600 text-center font-satoshi text-lg font-bold">
+                                {completionError}
+                            </Text>
+                        </View>
+                    )}
                     <View className="mt-6 h-fit">
                         {Object.keys(upcomingEvents).length > 0 && (
                             <Text className="text-white font-semibold text-lg ml-1">
@@ -165,13 +250,13 @@ export default function GoalDetailLayout() {
                                 {items.map(
                                     (
                                         feedback: EventFeedback,
-                                        index: number
+                                        index: number,
                                     ) => (
                                         <EventFeedbackInfo
                                             key={index}
                                             {...feedback}
                                         />
-                                    )
+                                    ),
                                 )}
                             </>
                         ))}

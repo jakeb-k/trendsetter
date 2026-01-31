@@ -10,8 +10,14 @@ export default function EventFeedbackInfo(eventFeedback?: EventFeedback) {
         return (
             <View className="pl-4 my-4 border-2 border-primary shadow-lg shadow-primary rounded-lg p-2 relative">
                 <View className="absolute top-2 right-4 flex flex-row items-center space-x-2">
-                    <Text className="text-xl">{emojiConverter(eventFeedback.mood)}</Text>
-                    <AntDesign name={statusConverter(eventFeedback.status)[0]} size={20} color={statusConverter(eventFeedback.status)[1]} />
+                    <Text className="text-xl">
+                        {emojiConverter(eventFeedback.mood)}
+                    </Text>
+                    <AntDesign
+                        name={statusConverter(eventFeedback.status)[0]}
+                        size={20}
+                        color={statusConverter(eventFeedback.status)[1]}
+                    />
                 </View>
                 <Text className="text-lg font-satoshi text-white mb-2">
                     {moment(eventFeedback.created_at).format('ddd Do MMM')}
