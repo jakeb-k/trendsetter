@@ -9,9 +9,7 @@ import { useEventsStore } from '@/stores/useEventStore';
 import { useGoalsStore } from '@/stores/useGoalStore';
 import Event from '@/types/models/Event';
 import EventFeedback from '@/types/models/EventFeedback';
-import {
-    calculateCompletionStats,
-} from '@/utils/progressCalculator';
+import { calculateCompletionStats } from '@/utils/progressCalculator';
 import { calculateEventsForCurrentMonth } from '@/utils/scheduleHandler';
 import { Entypo } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -35,7 +33,7 @@ export default function GoalDetailLayout() {
     const { events } = useEventsStore();
     const [isLoading, setIsLoading] = useState(true);
     const [goalFeedback, setGoalFeedback] = useState<GoalFeedback>(
-        {} as GoalFeedback
+        {} as GoalFeedback,
     );
     const [completionError, setCompletionError] = useState<string | null>(null);
     const [isCompleting, setIsCompleting] = useState(false);
@@ -46,9 +44,7 @@ export default function GoalDetailLayout() {
     const pointsEarned = computedStats.pointsEarned;
     const maxPossiblePoints = computedStats.maxPossiblePoints;
     const completionPercentage = Number(
-        maxPossiblePoints > 0
-            ? ((pointsEarned / maxPossiblePoints) * 100).toFixed(2)
-            : 0
+        maxPossiblePoints > 0 ? pointsEarned / maxPossiblePoints : 0,
     );
 
     const monthlyEvents = calculateEventsForCurrentMonth(events);
@@ -78,8 +74,8 @@ export default function GoalDetailLayout() {
                 .filter(
                     (event) =>
                         moment(event.date).isAfter(
-                            moment().format('YYYY-MM-DD')
-                        ) && event.eventID === eventID
+                            moment().format('YYYY-MM-DD'),
+                        ) && event.eventID === eventID,
                 )
                 .slice(0, 3);
 
@@ -88,7 +84,7 @@ export default function GoalDetailLayout() {
                     upcomingEvents.push({
                         ...latestEvent,
                         event: events.find(
-                            (event) => event.id === latestEvent.eventID
+                            (event) => event.id === latestEvent.eventID,
                         )!,
                     });
                 });
@@ -109,7 +105,7 @@ export default function GoalDetailLayout() {
                 });
         };
         fetchGoalFeedback();
-    }, []);
+    }, [events]);
 
     useEffect(() => {
         replaceGoal({
@@ -136,9 +132,7 @@ export default function GoalDetailLayout() {
                 params: { id: String(goal.id) },
             });
         } else {
-            setCompletionError(
-                'This goal is not eligible to complete yet.'
-            );
+            setCompletionError('This goal is not eligible to complete yet.');
         }
         setIsCompleting(false);
     };
@@ -191,7 +185,9 @@ export default function GoalDetailLayout() {
                         <>
                             <PrimaryButton onPress={handleCompleteGoal}>
                                 <Text className="text-white text-center font-satoshi text-lg font-bold">
-                                    {isCompleting ? 'Completing...' : 'Complete Goal'}
+                                    {isCompleting
+                                        ? 'Completing...'
+                                        : 'Complete Goal'}
                                 </Text>
                             </PrimaryButton>
                             {completionReasonText && (
@@ -254,13 +250,13 @@ export default function GoalDetailLayout() {
                                 {items.map(
                                     (
                                         feedback: EventFeedback,
-                                        index: number
+                                        index: number,
                                     ) => (
                                         <EventFeedbackInfo
                                             key={index}
                                             {...feedback}
                                         />
-                                    )
+                                    ),
                                 )}
                             </>
                         ))}
