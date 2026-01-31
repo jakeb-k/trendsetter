@@ -1,5 +1,6 @@
 import { storeGoal } from '@/api/goalsApi';
 import { useGoalsStore } from '@/stores/useGoalStore';
+import Goal from '@/types/models/Goal';
 import Entypo from '@expo/vector-icons/Entypo';
 import DateTimePicker, {
     DateTimePickerEvent,
@@ -9,10 +10,10 @@ import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import PrimaryButton from '../common/PrimaryButton';
 
 type Props = {
-    setSuccess: () => void;
+    passNewGoal: (goal: Goal) => void;
 };
 
-export default function CreateGoalForm({ setSuccess }: Props) {
+export default function CreateGoalForm({ passNewGoal }: Props) {
     const { updateGoals } = useGoalsStore();
 
     //@todo - set date to null to have actual validation
@@ -61,7 +62,7 @@ export default function CreateGoalForm({ setSuccess }: Props) {
             .then((response) => {
                 updateGoals(response.goal);
                 setError(null);
-                setSuccess();
+                passNewGoal(response.goal);
             })
             .catch((error) => {
                 setError('Unable to create goal, try again in a few seconds!');

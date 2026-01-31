@@ -6,7 +6,7 @@ import GoalEventForm from '../events/GoalEventForm';
 import CreateGoalForm from './CreateGoalForm';
 
 export default function CreateGoal() {
-    const [stage, setStage] = useState(1);
+    const [stage, setStage] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [newGoal, setNewGoal] = useState<Goal>({} as Goal);
 
@@ -19,7 +19,12 @@ export default function CreateGoal() {
                         subtitle="Make it real. No vague targets."
                     />
                     <View className="mt-2 h-[1px] w-full bg-gradient-to-r from-transparent via-[#FF7700]/70 to-transparent" />
-                    <CreateGoalForm setSuccess={() => setStage(1)} />
+                    <CreateGoalForm
+                        passNewGoal={(goal: Goal) => {
+                            setStage(1);
+                            setNewGoal(goal);
+                        }}
+                    />
                 </>
             ) : (
                 <View className="pb-32">
@@ -32,7 +37,7 @@ export default function CreateGoal() {
                         resetSubmitting={() => setIsSubmitting(false)}
                         isSubmitting={isSubmitting}
                         setSuccess={() => setStage(2)}
-                        newGoalID={4}
+                        newGoalID={newGoal.id}
                     />
                 </View>
             )}

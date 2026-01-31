@@ -315,3 +315,4 @@ Base URL: `https://trendsetter-core.test/api/v1` (dev)
 - **Main branch**: `main`
 - **Current feature branch**: `feature/create-and-complete-goals`
 - Commit messages: `feat:`, `fix:`, `refactor:` prefixes
+- Do not add or commit anything unless the user explicitly asks.
