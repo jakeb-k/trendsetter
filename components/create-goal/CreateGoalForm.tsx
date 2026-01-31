@@ -24,7 +24,7 @@ export default function CreateGoalForm({ setSuccess }: Props) {
     const [mode, setMode] = useState<any>('date');
     const [show, setShow] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
 
     //@todo fix this
     const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
@@ -46,14 +46,14 @@ export default function CreateGoalForm({ setSuccess }: Props) {
     };
 
     const validateNewGoalRequest = async () => {
-        setLoading(true);
+        setSubmitting(true);
         const error = validateGoal();
         if (error) {
             setError(error);
         } else {
             await handleNewGoalRequest();
         }
-        setLoading(false);
+        setSubmitting(false);
     };
 
     async function handleNewGoalRequest() {
@@ -166,10 +166,16 @@ export default function CreateGoalForm({ setSuccess }: Props) {
                     className="bg-white/10 text-white px-4 py-3 backdrop-blur-xl rounded-xl mt-2 mb-4 mr-2"
                 />
             </View>
-            <PrimaryButton onPress={validateNewGoalRequest}>
+            <PrimaryButton
+                className="relative"
+                onPress={validateNewGoalRequest}
+            >
                 <Text className="font-satoshi text-center text-white font-bold text-lg">
                     Create Goal
                 </Text>
+                {submitting && (
+                    <View className="animate-spin absolute right-1/4 border-t-2 border-r-2 top-2 rounded-full border-white size-6"></View>
+                )}
             </PrimaryButton>
             <View className="mt-12"></View>
             {error && (

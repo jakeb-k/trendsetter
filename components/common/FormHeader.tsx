@@ -20,12 +20,9 @@ export default function FormHeader({ title, subtitle }: Props) {
                     className="-ml-2"
                 />
             </TouchableOpacity>
-            <TitleText
-                className="font-bold text-2xl mt-4"
-                title={'Set a Goal'}
-            />
+            <TitleText className="font-bold text-2xl mt-4" title={title} />
             <Text className="text-white/50 font-satoshi font-semibold my-1 tracking-wide">
-                Make it real. No vague targets.
+                {subtitle}
             </Text>
         </View>
     );
