@@ -10,8 +10,7 @@ import { useGoalsStore } from '@/stores/useGoalStore';
 import Event from '@/types/models/Event';
 import EventFeedback from '@/types/models/EventFeedback';
 import {
-    calculateCurrentProgressForEvent,
-    calculateMaxProgressForGoal
+    calculateCompletionStats,
 } from '@/utils/progressCalculator';
 import { calculateEventsForCurrentMonth } from '@/utils/scheduleHandler';
 import { Entypo } from '@expo/vector-icons';
@@ -43,13 +42,9 @@ export default function GoalDetailLayout() {
 
     const goal = goals.find((goal) => goal.id.toString() === id)!;
 
-    const fallbackMaxPoints = calculateMaxProgressForGoal(goal, events);
-    const fallbackCurrentPoints = Object.values(goalFeedback).reduce(
-        (acc, feedback) => acc + calculateCurrentProgressForEvent(feedback),
-        0
-    );
-    const pointsEarned = goal.points_earned ?? fallbackCurrentPoints;
-    const maxPossiblePoints = goal.max_possible_points ?? fallbackMaxPoints;
+    const computedStats = calculateCompletionStats(goal, events, goalFeedback);
+    const pointsEarned = computedStats.pointsEarned;
+    const maxPossiblePoints = computedStats.maxPossiblePoints;
     const completionPercentage = Number(
         maxPossiblePoints > 0
             ? ((pointsEarned / maxPossiblePoints) * 100).toFixed(2)
@@ -59,8 +54,8 @@ export default function GoalDetailLayout() {
     const monthlyEvents = calculateEventsForCurrentMonth(events);
     const daysLeft = moment(goal.end_date).diff(moment(), 'days');
     const isCompleted = goal.status === 'completed' || !!goal.completed_at;
-    const isCompletable = !!goal.is_completable && !isCompleted;
-    const completionReasonText = (goal.completion_reasons ?? [])
+    const isCompletable = computedStats.isCompletable && !isCompleted;
+    const completionReasonText = computedStats.completionReasons
         .map((reason) => {
             if (reason === 'points_threshold') {
                 return 'You hit 75% of your target points.';
@@ -116,11 +111,24 @@ export default function GoalDetailLayout() {
         fetchGoalFeedback();
     }, []);
 
+    useEffect(() => {
+        replaceGoal({
+            ...goal,
+            points_earned: computedStats.pointsEarned,
+            max_possible_points: computedStats.maxPossiblePoints,
+            threshold_points: computedStats.thresholdPoints,
+            is_completable: computedStats.isCompletable,
+            completion_reasons: computedStats.completionReasons,
+        });
+    }, [goalFeedback, events]);
+
     const handleCompleteGoal = async () => {
         if (isCompleting) return;
         setIsCompleting(true);
         setCompletionError(null);
-        const response = await completeGoal(goal.id);
+        const response = await completeGoal(goal.id, {
+            completion_reasons: computedStats.completionReasons,
+        });
         if (!response?.error && response?.goal) {
             replaceGoal(response.goal);
             router.push({

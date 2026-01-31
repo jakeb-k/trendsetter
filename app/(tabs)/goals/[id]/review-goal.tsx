@@ -1,10 +1,15 @@
-import { createGoalReview, fetchGoalReview } from '@/api/goalsApi';
+import {
+    createGoalReview,
+    fetchGoalReview,
+    getGoalFeedbackHistory,
+} from '@/api/goalsApi';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import TitleText from '@/components/common/TitleText';
 import { ThemedView } from '@/components/ThemedView';
 import { useGoalsStore } from '@/stores/useGoalStore';
 import GoalReview from '@/types/models/GoalReview';
 import GoalReviewRequest from '@/types/requests/GoalReviewRequest';
+import { calculateCompletionStats } from '@/utils/progressCalculator';
 import { Entypo } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import moment from 'moment';
@@ -35,6 +40,7 @@ export default function ReviewGoalScreen() {
     const goal = goals.find((g) => g.id.toString() === id);
 
     const [review, setReview] = useState<GoalReview | null>(null);
+    const [feedbackMap, setFeedbackMap] = useState<Record<string, any[]>>({});
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -56,6 +62,10 @@ export default function ReviewGoalScreen() {
             if (!response?.error && response?.review) {
                 setReview(response.review);
             }
+            const feedbackResponse = await getGoalFeedbackHistory(String(id));
+            if (!feedbackResponse?.error && feedbackResponse?.feedback) {
+                setFeedbackMap(feedbackResponse.feedback);
+            }
             setIsLoading(false);
         };
         loadReview();
@@ -66,13 +76,22 @@ export default function ReviewGoalScreen() {
         if (snapshot) {
             return snapshot;
         }
+        if (!goal) {
+            return {
+                points_earned: 0,
+                max_possible_points: 0,
+                threshold_points: 0,
+                completion_reasons: [],
+            };
+        }
+        const computed = calculateCompletionStats(goal, goal.events ?? [], feedbackMap);
         return {
-            points_earned: goal?.points_earned ?? 0,
-            max_possible_points: goal?.max_possible_points ?? 0,
-            threshold_points: goal?.threshold_points ?? 0,
-            completion_reasons: goal?.completion_reasons ?? [],
+            points_earned: computed.pointsEarned,
+            max_possible_points: computed.maxPossiblePoints,
+            threshold_points: computed.thresholdPoints,
+            completion_reasons: computed.completionReasons,
         };
-    }, [review, goal]);
+    }, [review, goal, feedbackMap]);
 
     const toggleFeeling = (feeling: string) => {
         setForm((prev) => {
@@ -90,9 +109,36 @@ export default function ReviewGoalScreen() {
         if (isSubmitting) return;
         setIsSubmitting(true);
         setError(null);
+        const computed = goal
+            ? calculateCompletionStats(goal, goal.events ?? [], feedbackMap)
+            : null;
+        const statusCounts = Object.values(feedbackMap).flat().reduce(
+            (acc: Record<string, number>, feedback: any) => {
+                acc[feedback.status] = (acc[feedback.status] ?? 0) + 1;
+                return acc;
+            },
+            {}
+        );
+        const moodCounts = Object.values(feedbackMap).flat().reduce(
+            (acc: Record<string, number>, feedback: any) => {
+                acc[feedback.mood] = (acc[feedback.mood] ?? 0) + 1;
+                return acc;
+            },
+            {}
+        );
         const response = await createGoalReview(Number(id), {
             ...form,
             advice: form.advice?.trim() === '' ? null : form.advice,
+            stats_snapshot: computed
+                ? {
+                      points_earned: computed.pointsEarned,
+                      max_possible_points: computed.maxPossiblePoints,
+                      threshold_points: computed.thresholdPoints,
+                      completion_reasons: computed.completionReasons,
+                      status_counts: statusCounts,
+                      mood_counts: moodCounts,
+                  }
+                : null,
         });
         if (!response?.error && response?.review) {
             setReview(response.review);

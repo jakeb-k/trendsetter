@@ -25,7 +25,7 @@ export function calculateMaxProgressForEvent(event: Event): number {
     const weeks = repeat.duration_in_weeks ?? 0;
     const times_per_week =
         repeat.frequency === 'weekly' ? repeat.times_per_week! : 1;
-    return weeks * times_per_week;
+    return weeks * times_per_week * 4;
 }
 
 export function calculateProgressForGoal(goal: Goal, events: Event[]) {
@@ -41,4 +41,41 @@ export function calculateCurrentProgressForEvent(eventFeedback: EventFeedback[])
         (acc, feedback) => acc + pointsMap[feedback.status],
         0
     );
+}
+
+export function calculatePointsEarnedFromFeedbackMap(
+    feedbackMap: Record<string, EventFeedback[]>
+) {
+    return Object.values(feedbackMap).reduce(
+        (acc, feedback) => acc + calculateCurrentProgressForEvent(feedback),
+        0
+    );
+}
+
+export function calculateCompletionStats(
+    goal: Goal,
+    events: Event[],
+    feedbackMap: Record<string, EventFeedback[]>
+) {
+    const pointsEarned = calculatePointsEarnedFromFeedbackMap(feedbackMap);
+    const maxPossiblePoints = calculateMaxProgressForGoal(goal, events);
+    const thresholdPoints = Math.ceil(maxPossiblePoints * 0.75);
+    const completionReasons: string[] = [];
+    if (maxPossiblePoints > 0 && pointsEarned >= thresholdPoints) {
+        completionReasons.push('points_threshold');
+    }
+    const endDatePassed =
+        new Date().getTime() >=
+        new Date(goal.end_date).getTime() + 24 * 60 * 60 * 1000;
+    if (endDatePassed) {
+        completionReasons.push('end_date_passed');
+    }
+
+    return {
+        pointsEarned,
+        maxPossiblePoints,
+        thresholdPoints,
+        completionReasons,
+        isCompletable: completionReasons.length > 0,
+    };
 }

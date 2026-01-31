@@ -3,6 +3,10 @@ import TitleText from '@/components/common/TitleText';
 import { ThemedView } from '@/components/ThemedView';
 import { useGoalsStore } from '@/stores/useGoalStore';
 import Goal from '@/types/models/Goal';
+import {
+    calculateCurrentProgressForEvent,
+    calculateMaxProgressForGoal,
+} from '@/utils/progressCalculator';
 import { Entypo } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import moment from 'moment';
@@ -63,6 +67,24 @@ export default function CompletedGoalsScreen() {
                                 }
                                 className="bg-[#1A1A1A] drop-shadow-md rounded-lg p-3"
                             >
+                                {(() => {
+                                    const eventsWithFeedback = (goal.events ??
+                                        []) as any[];
+                                    const pointsEarned = eventsWithFeedback.reduce(
+                                        (acc, event) =>
+                                            acc +
+                                            calculateCurrentProgressForEvent(
+                                                event.feedback ?? [],
+                                            ),
+                                        0,
+                                    );
+                                    const maxPossiblePoints =
+                                        calculateMaxProgressForGoal(
+                                            goal,
+                                            eventsWithFeedback,
+                                        );
+                                    return (
+                                        <>
                                 <View className="flex flex-row justify-between">
                                     <Text className="text-[#F5F5F5] font-semibold text-base w-3/4">
                                         {goal.title}
@@ -86,10 +108,15 @@ export default function CompletedGoalsScreen() {
                                             : 'REVIEW'}
                                     </Text>
                                     <Text className="text-lightprimary font-semibold text-sm">
-                                        {goal.points_earned ?? 0} /{' '}
-                                        {goal.max_possible_points ?? 0} points
+                                        {goal.points_earned ?? pointsEarned} /{' '}
+                                        {goal.max_possible_points ??
+                                            maxPossiblePoints}{' '}
+                                        points
                                     </Text>
                                 </View>
+                                        </>
+                                    );
+                                })()}
                             </TouchableOpacity>
                         ))}
                     </View>

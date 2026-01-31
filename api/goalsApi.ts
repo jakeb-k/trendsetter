@@ -69,7 +69,10 @@ export async function storeGoal(
     }
 }
 
-export async function completeGoal(goalId: number) {
+export async function completeGoal(
+    goalId: number,
+    payload?: { completion_reasons?: string[] }
+) {
     try {
         const token = await AsyncStorage.getItem('token');
         if (!token) {
@@ -77,7 +80,7 @@ export async function completeGoal(goalId: number) {
         }
         const res = await axios.post(
             `${Config.API_URL}/goals/${goalId}/complete`,
-            {},
+            payload ?? {},
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -91,7 +94,10 @@ export async function completeGoal(goalId: number) {
     }
 }
 
-export async function createGoalReview(goalId: number, payload: GoalReviewRequest) {
+export async function createGoalReview(
+    goalId: number,
+    payload: GoalReviewRequest
+) {
     try {
         const token = await AsyncStorage.getItem('token');
         if (!token) {
