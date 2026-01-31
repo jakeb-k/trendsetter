@@ -70,14 +70,15 @@ export default function CompletedGoalsScreen() {
                                 {(() => {
                                     const eventsWithFeedback = (goal.events ??
                                         []) as any[];
-                                    const pointsEarned = eventsWithFeedback.reduce(
-                                        (acc, event) =>
-                                            acc +
-                                            calculateCurrentProgressForEvent(
-                                                event.feedback ?? [],
-                                            ),
-                                        0,
-                                    );
+                                    const pointsEarned =
+                                        eventsWithFeedback.reduce(
+                                            (acc, event) =>
+                                                acc +
+                                                calculateCurrentProgressForEvent(
+                                                    event.feedback ?? [],
+                                                ),
+                                            0,
+                                        );
                                     const maxPossiblePoints =
                                         calculateMaxProgressForGoal(
                                             goal,
@@ -85,35 +86,40 @@ export default function CompletedGoalsScreen() {
                                         );
                                     return (
                                         <>
-                                <View className="flex flex-row justify-between">
-                                    <Text className="text-[#F5F5F5] font-semibold text-base w-3/4">
-                                        {goal.title}
-                                    </Text>
-                                    <Text className="text-[#F5F5F5] font-semibold text-base w-1/4 text-right">
-                                        {goal.completed_at
-                                            ? moment(goal.completed_at).format(
-                                                  'Do MMM',
-                                              )
-                                            : '—'}
-                                    </Text>
-                                </View>
-                                <View className="flex flex-row justify-between mt-2">
-                                    <Text className="text-lightprimary font-semibold text-sm">
-                                        {goal.review_summary?.outcome
-                                            ? String(
-                                                  goal.review_summary.outcome,
-                                              )
-                                                  .replace('_', ' ')
-                                                  .toUpperCase()
-                                            : 'REVIEW'}
-                                    </Text>
-                                    <Text className="text-lightprimary font-semibold text-sm">
-                                        {goal.points_earned ?? pointsEarned} /{' '}
-                                        {goal.max_possible_points ??
-                                            maxPossiblePoints}{' '}
-                                        points
-                                    </Text>
-                                </View>
+                                            <View className="flex flex-row justify-between">
+                                                <Text className="text-[#F5F5F5] font-semibold text-base w-3/4">
+                                                    {goal.title}
+                                                </Text>
+                                                <Text className="text-[#F5F5F5] font-semibold text-base w-1/4 text-right">
+                                                    {goal.completed_at
+                                                        ? moment(
+                                                              goal.completed_at,
+                                                          ).format('Do MMM')
+                                                        : '—'}
+                                                </Text>
+                                            </View>
+                                            <View className="flex flex-row justify-between mt-2">
+                                                <Text className="text-lightprimary font-semibold text-sm">
+                                                    {goal.review_summary
+                                                        ?.outcome
+                                                        ? String(
+                                                              goal
+                                                                  .review_summary
+                                                                  .outcome,
+                                                          )
+                                                              .replace('_', ' ')
+                                                              .toUpperCase()
+                                                        : 'REVIEW'}
+                                                </Text>
+                                                <Text className="text-lightprimary font-semibold text-sm">
+                                                    {goal.points_earned ??
+                                                        pointsEarned}{' '}
+                                                    /{' '}
+                                                    {goal.max_possible_points ??
+                                                        maxPossiblePoints}{' '}
+                                                    points
+                                                </Text>
+                                            </View>
                                         </>
                                     );
                                 })()}
