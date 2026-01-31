@@ -9,8 +9,10 @@ import DateTimePicker, {
     DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import PrimaryButton from '../common/PrimaryButton';
 import TitleText from '../common/TitleText';
 
 type EventFormProps = {
@@ -33,9 +35,8 @@ export default function GoalEventForm({
     const { setEvents, events } = useEventsStore();
     const { goals } = useGoalsStore();
 
-    console.log(goals);
     const [newEvent, setNewEvent] = useState<EventRequest>({
-        goal_id: goals[0].id,
+        goal_id: newGoalID ?? goals[0]?.id ?? 0,
         title: '',
         description: '',
         frequency: 'weekly',
@@ -45,6 +46,8 @@ export default function GoalEventForm({
     });
     const [mode, setMode] = useState<any>('date');
     const [show, setShow] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [submitting, setSubmitting] = useState(false);
 
     //@todo fix this
     const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
@@ -66,22 +69,40 @@ export default function GoalEventForm({
     };
 
     useEffect(() => {
-        async function handleEventRequest() {
-            storeEvent(newEvent)
-                .then((response) => {
-                    //@ts-ignore
-                    setEvents([...events, response as Event]);
-                    setSuccess();
-                })
-                .catch((error) => {
-                    resetSubmitting();
-                    console.error(error);
-                })
-                .finally(() => {});
+        if (newGoalID) {
+            setNewEvent((prev) => ({
+                ...prev,
+                goal_id: newGoalID,
+            }));
         }
+    }, [newGoalID]);
 
+    const submitEvent = async () => {
+        if (submitting) {
+            return;
+        }
+        setSubmitting(true);
+        const goalId = newGoalID ?? newEvent.goal_id;
+        storeEvent({ ...newEvent, goal_id: goalId })
+            .then((response) => {
+                //@ts-ignore
+                setEvents([...events, response as Event]);
+                setSuccess();
+                router.navigate('/');
+            })
+            .catch((error) => {
+                setError('Unable to create event, try again in a few seconds!');
+                console.error(error);
+            })
+            .finally(() => {
+                setSubmitting(false);
+                resetSubmitting();
+            });
+    };
+
+    useEffect(() => {
         if (isSubmitting) {
-            handleEventRequest();
+            submitEvent();
         }
     }, [isSubmitting]);
 
@@ -292,6 +313,22 @@ export default function GoalEventForm({
                     />
                 )}
             </View>
+            <PrimaryButton className="relative" onPress={submitEvent}>
+                <Text className="font-satoshi text-center text-white font-bold text-lg">
+                    Create Event
+                </Text>
+                {submitting && (
+                    <View className="animate-spin absolute right-1/4 border-t-2 border-r-2 top-2 rounded-full border-white size-6"></View>
+                )}
+            </PrimaryButton>
+            <View className="mt-12"></View>
+            {error && (
+                <View className="rounded-xl backdrop-blur-xl bg-red-200/20 mt-4 p-4">
+                    <Text className="text-red-600 text-center font-satoshi text-lg font-bold">
+                        {error}
+                    </Text>
+                </View>
+            )}
         </View>
     );
 }
