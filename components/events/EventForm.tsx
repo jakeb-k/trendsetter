@@ -16,7 +16,7 @@ import TitleText from '../common/TitleText';
 type EventFormProps = {
     event?: Event;
     isSubmitting: boolean;
-    closeForm: () => void;
+    closeForm?: () => void;
     resetSubmitting: () => void;
     setSuccess: () => void;
 };
@@ -28,7 +28,6 @@ export default function EventForm({
     resetSubmitting,
     setSuccess,
 }: EventFormProps) {
-
     const { setEvents, events } = useEventsStore();
     const { goals } = useGoalsStore();
 
