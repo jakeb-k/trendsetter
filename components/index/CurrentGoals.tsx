@@ -18,7 +18,7 @@ export default function CurrentGoals({ goals }: { goals: Goal[] }) {
                         href={'/completed-goals'}
                         className="rounded-lg bg-white/10 px-2 py-1"
                     >
-                        <Text className="text-white font-semibold font-satoshio">
+                        <Text className="text-white font-semibold font-satoshi">
                             COMPLETED
                         </Text>
                     </Link>
@@ -27,7 +27,7 @@ export default function CurrentGoals({ goals }: { goals: Goal[] }) {
                         href={'/create-goal'}
                         className="rounded-lg bg-primary px-2 py-1"
                     >
-                        <Text className="text-white font-semibold font-satoshio">
+                        <Text className="text-white font-semibold font-satoshi">
                             ADD NEW
                         </Text>
                     </Link>
