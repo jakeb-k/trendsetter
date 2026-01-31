@@ -9,8 +9,10 @@ import DateTimePicker, {
     DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import PrimaryButton from '../common/PrimaryButton';
 import TitleText from '../common/TitleText';
 
 type EventFormProps = {
@@ -19,20 +21,22 @@ type EventFormProps = {
     closeForm?: () => void;
     resetSubmitting: () => void;
     setSuccess: () => void;
+    newGoalID?: number | null;
 };
 
-export default function EventForm({
+export default function GoalEventForm({
     event,
     isSubmitting,
     closeForm,
     resetSubmitting,
     setSuccess,
+    newGoalID,
 }: EventFormProps) {
     const { setEvents, events } = useEventsStore();
     const { goals } = useGoalsStore();
 
     const [newEvent, setNewEvent] = useState<EventRequest>({
-        goal_id: goals[0].id,
+        goal_id: newGoalID ?? goals[0]?.id ?? 0,
         title: '',
         description: '',
         frequency: 'weekly',
@@ -42,6 +46,8 @@ export default function EventForm({
     });
     const [mode, setMode] = useState<any>('date');
     const [show, setShow] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [submitting, setSubmitting] = useState(false);
 
     //@todo fix this
     const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
@@ -63,65 +69,102 @@ export default function EventForm({
     };
 
     useEffect(() => {
-        async function handleEventRequest() {
-            storeEvent(newEvent)
-                .then((response) => {
-                    //@ts-ignore
-                    setEvents([...events, response as Event]);
-                    setSuccess();
-                })
-                .catch((error) => {
-                    resetSubmitting();
-                    console.error(error);
-                })
-                .finally(() => {});
+        if (newGoalID) {
+            setNewEvent((prev) => ({
+                ...prev,
+                goal_id: newGoalID,
+            }));
         }
+    }, [newGoalID]);
 
+    const submitEvent = async () => {
+        if (submitting) {
+            return;
+        }
+        setSubmitting(true);
+        const goalId = newGoalID ?? newEvent.goal_id;
+        storeEvent({ ...newEvent, goal_id: goalId })
+            .then((response) => {
+                //@ts-ignore
+                setEvents([...events, response as Event]);
+                setSuccess();
+                router.navigate('/');
+            })
+            .catch((error) => {
+                setError('Unable to create event, try again in a few seconds!');
+                console.error(error);
+            })
+            .finally(() => {
+                setSubmitting(false);
+                resetSubmitting();
+            });
+    };
+
+    useEffect(() => {
         if (isSubmitting) {
-            handleEventRequest();
+            submitEvent();
         }
     }, [isSubmitting]);
 
     return (
-        <View className="my-4 border-2 border-primary shadow-lg shadow-primary rounded-lg p-2 px-4 relative space-y-2">
-            <TouchableOpacity
-                className="absolute top-4 right-4 z-50"
-                onPress={closeForm}
-            >
-                <AntDesign name={'closecircleo'} size={24} color="white" />
-            </TouchableOpacity>
-            <TitleText title="New Event" />
+        <View className="flex flex-col space-y-2 my-4 relative">
+            {!newGoalID && (
+                <>
+                    <TouchableOpacity
+                        className="absolute top-4 right-4 z-50"
+                        onPress={closeForm}
+                    >
+                        <AntDesign
+                            name={'closecircleo'}
+                            size={24}
+                            color="white"
+                        />
+                    </TouchableOpacity>
+                    <TitleText title="New Event" />
+                </>
+            )}
             <View>
-                <Text className="text-lg font-satoshi text-white mt-2">
+                <Text className="text-md font-satoshi text-white mt-2">
                     Goal
                 </Text>
-                <View className="bg-white/10 px-4 py-3 backdrop-blur-xl rounded-xl mt-2 mb-4 mr-2 text-primary text-md">
-                    <Picker
-                        selectedValue={newEvent.goal_id}
-                        onValueChange={(itemValue) =>
-                            setNewEvent((prev) => ({
-                                ...prev,
-                                goal_id: itemValue,
-                            }))
+                {newGoalID && (
+                    <Text className="bg-white/10 text-white px-4 py-3 backdrop-blur-xl rounded-xl mt-2 mb-4 mr-2">
+                        {
+                            goals.find((goal: Goal) => goal.id === newGoalID)
+                                ?.title
                         }
-                        dropdownIconColor="white" // for Android
-                        style={{
-                            backgroundColor: 'transparent',
-                            color: '',
-                        }}
-                    >
-                        {goals.map((goal: Goal) => (
-                            <Picker.Item
-                                key={goal.id}
-                                label={goal.title}
-                                value={goal.id}
-                            />
-                        ))}
-                    </Picker>
-                </View>
+                    </Text>
+                )}
+                {!newGoalID && (
+                    <View className="bg-white/10 px-4 py-3 backdrop-blur-xl rounded-xl mt-2 mb-4 mr-2 text-primary text-md">
+                        <Picker
+                            selectedValue={newEvent.goal_id}
+                            onValueChange={(itemValue) =>
+                                setNewEvent((prev) => ({
+                                    ...prev,
+                                    goal_id: itemValue,
+                                }))
+                            }
+                            dropdownIconColor="white"
+                            style={{
+                                backgroundColor: 'transparent',
+                                color: '',
+                            }}
+                        >
+                            {goals.map((goal: Goal) => (
+                                <Picker.Item
+                                    key={goal.id}
+                                    label={goal.title}
+                                    value={goal.id}
+                                />
+                            ))}
+                        </Picker>
+                    </View>
+                )}
             </View>
+            <View className="mt-2 h-[1px] w-full bg-secondary" />
             <View>
-                <Text className="text-lg font-satoshi text-white">Title</Text>
+                <Text className="text-md font-satoshi text-white">Title</Text>
                 <TextInput
                     value={newEvent.title}
                     textAlignVertical="top"
@@ -133,8 +176,9 @@ export default function EventForm({
                     className="bg-white/10 text-white px-4 py-3 backdrop-blur-xl rounded-xl mt-2 mb-4 mr-2"
                 />
             </View>
+            <View className="mt-2 h-[1px] w-full bg-secondary" />
             <View>
-                <Text className="text-lg font-satoshi text-white">
+                <Text className="text-md font-satoshi text-white">
                     Description
                 </Text>
                 <TextInput
@@ -150,7 +194,8 @@ export default function EventForm({
                     className="bg-white/10 text-white px-4 py-3 backdrop-blur-xl rounded-xl mt-2 mb-4 mr-2"
                 />
             </View>
-            <Text className="text-lg font-satoshi text-white">Repeat</Text>
+            <View className="mt-2 h-[1px] w-full bg-secondary" />
+            <Text className="text-md font-satoshi text-white">Repeat</Text>
             <View className="flex flex-row items-center space-x-4 pb-2">
                 <View className="flex flex-row space-x-2 items-center">
                     <View
@@ -174,7 +219,7 @@ export default function EventForm({
                             }
                         />
                     </View>
-                    <Text className="text-lg font-satoshi text-white">
+                    <Text className="text-md font-satoshi text-white">
                         Weekly
                     </Text>
                 </View>
@@ -200,14 +245,14 @@ export default function EventForm({
                             }
                         />
                     </View>
-                    <Text className="text-lg font-satoshi text-white">
+                    <Text className="text-md font-satoshi text-white">
                         Monthly
                     </Text>
                 </View>
             </View>
             <View className="flex flex-row justify-between space-x-2">
                 <View className="w-[47.5%]">
-                    <Text className="text-lg font-satoshi text-white mt-3">
+                    <Text className="text-md font-satoshi text-white mt-3">
                         Frequency
                     </Text>
                     <TextInput
@@ -226,7 +271,7 @@ export default function EventForm({
                     />
                 </View>
                 <View className="w-[47.5%]">
-                    <Text className="text-lg font-satoshi text-white mt-3">
+                    <Text className="text-md font-satoshi text-white mt-3">
                         Duration (weeks)
                     </Text>
                     <TextInput
@@ -245,15 +290,16 @@ export default function EventForm({
                     />
                 </View>
             </View>
+            <View className="mt-2 h-[1px] w-full bg-secondary" />
             <View>
-                <Text className="text-lg font-satoshi text-white">
+                <Text className="text-md font-satoshi text-white">
                     Start Date
                 </Text>
                 <TouchableOpacity
                     onPress={showDatepicker}
                     className="bg-white/10 text-white px-4 py-3 backdrop-blur-xl rounded-xl mt-2 mb-4 mr-2"
                 >
-                    <Text className="text-lg font-satoshi text-white">
+                    <Text className="text-md font-satoshi text-white">
                         Select Date
                     </Text>
                 </TouchableOpacity>
@@ -267,6 +313,22 @@ export default function EventForm({
                     />
                 )}
             </View>
+            <PrimaryButton className="relative" onPress={submitEvent}>
+                <Text className="font-satoshi text-center text-white font-bold text-lg">
+                    Create Event
+                </Text>
+                {submitting && (
+                    <View className="animate-spin absolute right-1/4 border-t-2 border-r-2 top-2 rounded-full border-white size-6"></View>
+                )}
+            </PrimaryButton>
+            <View className="mt-12"></View>
+            {error && (
+                <View className="rounded-xl backdrop-blur-xl bg-red-200/20 mt-4 p-4">
+                    <Text className="text-red-600 text-center font-satoshi text-lg font-bold">
+                        {error}
+                    </Text>
+                </View>
+            )}
         </View>
     );
 }
