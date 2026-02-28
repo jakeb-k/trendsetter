@@ -33,7 +33,9 @@ export default function TodaysFocus({
                             }  border-gray-700 flex flex-row justify-between w-full items-center`}
                         >
                             <View>
-                                <Text className="text-lg text-white font-satoshi">
+                                <Text
+                                    className={`${event.title.length > 35 ? 'text-[15.6px]' : 'text-lg'} text-white font-satoshi`}
+                                >
                                     {event.title}
                                 </Text>
                             </View>
