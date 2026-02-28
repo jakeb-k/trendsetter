@@ -1,14 +1,18 @@
 import type { EventDate } from '@/types/models/Event';
 import Event from '@/types/models/Event';
 import moment from 'moment';
-import { calculateEventsForCurrentMonth } from './scheduleHandler';
+import { calculateEventsForDateRange } from './scheduleHandler';
 
 export function computeDateRangeFromEventStart(
     event: Event,
     loggedDates: string[],
-    events: Event[],
+    events: Event[]
 ) {
-    let scheduledDates = calculateEventsForCurrentMonth(events)
+    let scheduledDates = calculateEventsForDateRange(
+        events,
+        event.scheduled_for ?? event.created_at ?? moment().toDate(),
+        moment().toDate()
+    )
         .filter(
             (eventDate: EventDate) =>
                 eventDate.eventID == event.id &&
