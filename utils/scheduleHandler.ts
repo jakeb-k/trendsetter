@@ -2,6 +2,10 @@ import type { EventDate } from '@/types/models/Event';
 import Event from '@/types/models/Event';
 import moment, { Moment } from 'moment';
 
+function resolveEventStart(event: Event): Moment {
+    return moment(event.scheduled_for ?? event.created_at);
+}
+
 export function calculateCompletionPercentage(startDate: Date, endDate: Date) {
     const totalDiffInDays = moment(endDate).diff(moment(startDate), 'days');
     const elapsedDiffInDays = moment().diff(moment(startDate), 'days');
@@ -31,7 +35,7 @@ export function calculateEventsForCurrentMonth(events: Event[], currentMonthDate
             }
             return dateEvents;
         } else {
-            const endOfEvent = moment(event.created_at).add(
+            const endOfEvent = resolveEventStart(event).clone().add(
                 event.repeat?.duration_in_weeks,
                 'weeks'
             );
@@ -65,8 +69,8 @@ export function calculateEventsForCurrentMonth(events: Event[], currentMonthDate
 }
 
 function generateDailyEventObjects(event: Event, endOfMonth: Moment): EventDate[] {
-    let current = moment(event.created_at);
-    const endOfEvent = moment(event.created_at).add(
+    let current = resolveEventStart(event).clone();
+    const endOfEvent = resolveEventStart(event).clone().add(
         event.repeat?.duration_in_weeks,
         'weeks'
     );
@@ -88,8 +92,8 @@ function generateWeeklyEventObjects(event: Event, endOfMonth: Moment): EventDate
     let dateObjects: EventDate[] = [];
     const { repeat } = event;
 
-    let current = moment(event.created_at);
-    const endOfEvent = moment(event.created_at).add(
+    let current = resolveEventStart(event).clone();
+    const endOfEvent = resolveEventStart(event).clone().add(
         event.repeat?.duration_in_weeks,
         'weeks'
     );
@@ -122,7 +126,7 @@ function generateWeeklyEventObjects(event: Event, endOfMonth: Moment): EventDate
 }
 
 function generateMonthlyEventObjects(event: Event, endOfMonth: Moment): undefined | EventDate {
-    const dateValue = moment(event.created_at).format('YYYY-MM-DD');
+    const dateValue = resolveEventStart(event).format('YYYY-MM-DD');
     if (endOfMonth.isBefore(dateValue)) return; 
     const currentMonthValue = moment(endOfMonth).month() + 1;
     const [year, , day] = dateValue.split('-');
