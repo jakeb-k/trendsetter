@@ -83,7 +83,7 @@ Every step is built to push you forward. Check your calendar, lock in your focus
                         setEvents(response.events);
                         await AsyncStorage.setItem(
                             'ai_plan',
-                            JSON.stringify(response.ai_plan)
+                            JSON.stringify(response.ai_plan),
                         );
                         setGoals([...goals, response.goal]);
                         setFinished(true);
@@ -95,7 +95,7 @@ Every step is built to push you forward. Check your calendar, lock in your focus
             } else {
                 console.error(response.error);
                 setError(
-                    'There was an error logging in. Please try again later.'
+                    'There was an error logging in. Please try again later.',
                 );
             }
         } catch (err) {
@@ -120,7 +120,7 @@ Every step is built to push you forward. Check your calendar, lock in your focus
                     </PrimaryButton>
                 )}
             </ScrollView>
-            <View className="absolute bottom-16 pt-6 rounded-t-lg w-full backdrop-blur-xl">
+            <View className="absolute bottom-16 pt-6 rounded-t-lg w-full">
                 <TextInput
                     multiline={true}
                     value={newMessage}
